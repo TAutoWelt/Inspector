@@ -3,105 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoCheck MK - Инспекција на возила</title>
+    <title>AutoCheck MK - Apple iOS Theme</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Vue 3 CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- Google Fonts Inter -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap" rel="stylesheet">    <style>
-        body { font-family: "Google Sans", sans-serif; }
-        * {font-family: "Google Sans", sans-serif;} 
+    
+    <style>
+        /* Apple System Typography Stack */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: #F2F2F7;
+            -webkit-tap-highlight-color: transparent;
+        }
+        * {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            letter-spacing: -0.01em;
+        } 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Smooth transitions matching iOS friction */
+        .ios-transition {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            body { background: white; color: black; }
+            body { background: white !important; color: black !important; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen font-sans pb-24 antialiased">
+<body class="bg-[#F2F2F7] text-slate-900 min-h-screen font-sans pb-28 antialiased selection:bg-red-500 selection:text-white">
     <div id="app" class="max-w-md md:max-w-4xl mx-auto min-h-screen flex flex-col">
 
-        <!-- HEADER BAR (STICKY WITH VEHICLE DATA & FILTERS) -->
-        <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3 space-y-2.5 no-print shadow-sm">
+        <!-- HEADER BAR (APPLE FROSTED GLASS STICKY HEADER) -->
+        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-black/5 px-4 py-3 space-y-2.5 no-print shadow-sm ios-transition">
             <!-- HEADER TOP ROW -->
             <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-700 to-indigo-500 flex items-center justify-center shadow-md shadow-blue-500/20">
-                        <i class="fa-solid fa-car-side text-white text-lg"></i>
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-[#FF3B30] flex items-center justify-center shadow-sm shadow-red-500/30">
+                        <i class="fa-solid fa-car-side text-white text-base"></i>
                     </div>
                     <div>
-                        <h1 class="font-bold text-lg leading-tight tracking-tight text-slate-900">AutoCheck <span class="text-red-700 font-medium text-xs px-2 py-0.5 rounded bg-blue-50 border border-blue-100">MK</span></h1>
-                        <p class="text-xs text-slate-500">Проверка на увезени возила</p>
+                        <h1 class="font-bold text-base leading-none tracking-tight text-slate-900 flex items-center gap-1.5">
+                            AutoCheck
+                            <span class="text-[10px] font-bold text-[#FF3B30] px-1.5 py-0.5 rounded-full bg-red-50 border border-red-100 uppercase tracking-wider">MK</span>
+                        </h1>
+                        <p class="text-[11px] text-slate-400 font-medium">Инспекција на увезени возила</p>
                     </div>
                 </div>
                 
                 <div class="flex items-center space-x-2">
-                    <button @click="currentTab = 'history'" :class="currentTab === 'history' ? 'bg-red-700 text-white shadow-md' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition">
-                        <i class="fa-solid fa-folder-closed"></i>
+                    <button @click="currentTab = 'history'" 
+                            :class="currentTab === 'history' ? 'bg-[#FF3B30] text-white shadow-sm' : 'bg-[#767680]/10 text-slate-700 hover:bg-[#767680]/15'" 
+                            class="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1.5 ios-transition active:scale-95">
+                        <i class="fa-solid fa-folder-closed text-xs"></i>
                         <span class="hidden sm:inline">Архива</span>
-                        <span :class="currentTab === 'history' ? 'bg-blue-700' : 'bg-slate-200'" class="text-xs px-1.5 py-0.5 rounded-full">{{ savedInspections.length }}</span>
+                        <span :class="currentTab === 'history' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full">{{ savedInspections.length }}</span>
                     </button>
-                    <button @click="createNewInspection()" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1 shadow-md shadow-emerald-600/20 active:scale-95 transition">
-                        <i class="fa-solid fa-plus"></i>
+                    <button @click="createNewInspection()" class="bg-[#FF3B30] hover:bg-[#E03126] text-white px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1 shadow-sm active:scale-95 ios-transition">
+                        <i class="fa-solid fa-plus text-xs"></i>
                         <span>Нова</span>
                     </button>
                 </div>
             </div>
 
-            <!-- VEHICLE DATA DISPLAY IN STICKY HEADER (TEXT ONLY) -->
-            <div v-if="currentTab === 'form'" class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <!-- VEHICLE DATA DISPLAY IN STICKY HEADER (READ-ONLY CLEAN TEXT DISPLAY) -->
+            <div v-if="currentTab === 'form'" class="bg-[#767680]/5 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs border border-black/5">
                 <div class="flex items-center space-x-3 overflow-x-auto hide-scrollbar">
-                    <div class="flex items-center space-x-1.5 font-black text-slate-900 text-sm sm:text-base">
-                        <i class="fa-solid fa-car text-red-700"></i>
+                    <div class="flex items-center space-x-1.5 font-bold text-slate-900 text-sm">
+                        <i class="fa-solid fa-car text-[#FF3B30]"></i>
                         <span>{{ activeInspection.vehicle.makeModel || 'Возило не е внесено' }}</span>
                     </div>
                     <span class="text-slate-300">|</span>
-                    <div class="flex items-center space-x-1 text-slate-600 font-mono">
-                        <span class="text-slate-400 font-semibold">VIN:</span>
-                        <span class="font-bold text-slate-800">{{ activeInspection.vehicle.vin || '-----' }}</span>
+                    <div class="flex items-center space-x-1 font-mono text-slate-600">
+                        <span class="text-slate-400 font-semibold text-[11px]">VIN:</span>
+                        <span class="font-bold text-slate-800 text-[11px] uppercase tracking-wider">{{ activeInspection.vehicle.vin || '-----' }}</span>
                     </div>
                     <span class="text-slate-300 hidden sm:inline">|</span>
                     <div class="hidden sm:flex items-center space-x-1 text-slate-600">
-                        <span class="text-slate-400 font-semibold">Прегледал:</span>
-                        <span class="font-medium text-slate-800">{{ activeInspection.inspector || 'Ненаведен' }}</span>
+                        <span class="text-slate-400 font-semibold text-[11px]">Прегледал:</span>
+                        <span class="font-semibold text-slate-800 text-[11px]">{{ activeInspection.inspector || 'Ненаведен' }}</span>
                     </div>
                 </div>
 
                 <div class="flex items-center space-x-2 shrink-0">
-                    <span class="text-[11px] text-slate-500 bg-white border border-slate-200 px-2 py-0.5 rounded-md font-medium">{{ activeInspection.date }}</span>
-                    <button @click="openVehicleEditModal()" class="text-red-700 hover:text-blue-800 bg-blue-50 border border-blue-200 hover:bg-blue-100 px-2 py-0.5 rounded-md font-bold text-[11px] transition flex items-center space-x-1">
-                        <i class="fa-solid fa-pen"></i>
+                    <span class="text-[11px] text-slate-500 bg-white border border-black/5 px-2 py-0.5 rounded-lg font-medium shadow-2xs">{{ activeInspection.date }}</span>
+                    <button @click="openVehicleEditModal()" class="text-[#FF3B30] bg-red-50 hover:bg-red-100 border border-red-200/60 px-2.5 py-0.5 rounded-lg font-bold text-[11px] ios-transition flex items-center space-x-1 active:scale-95">
+                        <i class="fa-solid fa-pen text-[10px]"></i>
                         <span>Уреди</span>
                     </button>
                 </div>
             </div>
 
-            <!-- CATEGORY & SEARCH FILTERS IN STICKY HEADER -->
+            <!-- CATEGORY & SEARCH FILTERS (APPLE SEGMENTED PICKER STYLE) -->
             <div v-if="currentTab === 'form'" class="flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar pt-0.5">
-                <div class="flex space-x-1.5">
-                    <button @click="categoryFilter = 'ALL'" :class="categoryFilter === 'ALL' ? 'bg-red-700 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition">
+                <div class="bg-[#E5E5EA] p-1 rounded-2xl flex space-x-1 shrink-0">
+                    <button @click="categoryFilter = 'ALL'" 
+                            :class="categoryFilter === 'ALL' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
+                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition">
                         Сите ({{ activeInspection.items.length }})
                     </button>
-                    <button @click="categoryFilter = 'НАДВОРЕШНА ПРОВЕРКА'" :class="categoryFilter === 'НАДВОРЕШНА ПРОВЕРКА' ? 'bg-red-700 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition">
-                        <i class="fa-solid fa-car-on mr-1"></i> Надворешна
+                    <button @click="categoryFilter = 'НАДВОРЕШНА ПРОВЕРКА'" 
+                            :class="categoryFilter === 'НАДВОРЕШНА ПРОВЕРКА' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
+                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition flex items-center space-x-1">
+                        <i class="fa-solid fa-car-on text-[11px]"></i>
+                        <span>Надворешна</span>
                     </button>
-                    <button @click="categoryFilter = 'ВНАТРЕШНОСТ'" :class="categoryFilter === 'ВНАТРЕШНОСТ' ? 'bg-red-700 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition">
-                        <i class="fa-solid fa-couch mr-1"></i> Внатрешност
+                    <button @click="categoryFilter = 'ВНАТРЕШНОСТ'" 
+                            :class="categoryFilter === 'ВНАТРЕШНОСТ' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
+                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition flex items-center space-x-1">
+                        <i class="fa-solid fa-couch text-[11px]"></i>
+                        <span>Внатрешност</span>
                     </button>
-                    <button @click="categoryFilter = 'DEFECTS'" :class="categoryFilter === 'DEFECTS' ? 'bg-rose-600 text-white shadow-md' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'" class="px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition">
-                        <i class="fa-solid fa-triangle-exclamation mr-1" :class="categoryFilter === 'DEFECTS' ? 'text-rose-200' : 'text-rose-500'"></i> Со Оштетувања ({{ notOkCount }})
+                    <button @click="categoryFilter = 'DEFECTS'" 
+                            :class="categoryFilter === 'DEFECTS' ? 'bg-white text-[#FF3B30] shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
+                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition flex items-center space-x-1">
+                        <i class="fa-solid fa-triangle-exclamation text-[11px] text-[#FF3B30]"></i>
+                        <span>Дефекти ({{ notOkCount }})</span>
                     </button>
                 </div>
 
-                <button @click="markAllRemainingOk()" class="text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-xl whitespace-nowrap transition font-bold flex items-center space-x-1 shadow-sm shrink-0">
-                    <i class="fa-solid fa-double-check"></i>
+                <button @click="markAllRemainingOk()" class="text-xs text-[#FF3B30] bg-red-50 hover:bg-red-100 border border-red-200/60 px-3 py-1.5 rounded-2xl whitespace-nowrap font-bold flex items-center space-x-1 shadow-2xs shrink-0 active:scale-95 ios-transition">
+                    <i class="fa-solid fa-double-check text-[11px]"></i>
                     <span>Останати OK</span>
                 </button>
             </div>
@@ -113,18 +141,18 @@
             <!-- TAB 1: ACTIVE INSPECTION -->
             <div v-if="currentTab === 'form'" class="space-y-4">
 
-                <!-- OVERALL PROGRESS BAR -->
-                <div class="bg-white border border-slate-200 rounded-xl p-3 flex flex-col space-y-2 shadow-sm">
+                <!-- OVERALL PROGRESS CARD (iOS CARD STYLE) -->
+                <div class="bg-white border border-black/5 rounded-3xl p-4 space-y-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
                     <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-500 font-medium">Проверени ставки: <strong class="text-slate-900">{{ checkedCount }} / {{ activeInspection.items.length }}</strong></span>
-                        <div class="flex space-x-3 font-semibold">
-                            <span class="text-emerald-600"><i class="fa-solid fa-circle-check"></i> {{ okCount }} Во ред</span>
-                            <span class="text-rose-600"><i class="fa-solid fa-triangle-exclamation"></i> {{ notOkCount }} Дефект</span>
+                        <span class="text-slate-500 font-semibold">Проверени ставки: <strong class="text-slate-900 font-bold">{{ checkedCount }} / {{ activeInspection.items.length }}</strong></span>
+                        <div class="flex space-x-3 font-bold">
+                            <span class="text-[#34C759] flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> {{ okCount }} Во ред</span>
+                            <span class="text-[#FF3B30] flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> {{ notOkCount }} Дефект</span>
                         </div>
                     </div>
-                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden flex">
-                        <div class="bg-emerald-500 h-full transition-all duration-300" :style="{ width: (okCount / activeInspection.items.length * 100) + '%' }"></div>
-                        <div class="bg-rose-500 h-full transition-all duration-300" :style="{ width: (notOkCount / activeInspection.items.length * 100) + '%' }"></div>
+                    <div class="w-full bg-[#E5E5EA] rounded-full h-2.5 overflow-hidden flex">
+                        <div class="bg-[#34C759] h-full ios-transition" :style="{ width: (okCount / activeInspection.items.length * 100) + '%' }"></div>
+                        <div class="bg-[#FF3B30] h-full ios-transition" :style="{ width: (notOkCount / activeInspection.items.length * 100) + '%' }"></div>
                     </div>
                 </div>
 
@@ -133,35 +161,35 @@
                     <div v-for="(item, index) in filteredItems" :key="item.id" 
                          @click="activeItemId = item.id"
                          :class="{
-                             'shadow-xl -translate-y-1 ring-2 ring-blue-500/40 border-blue-500 z-10 bg-white': activeItemId === item.id,
-                             'border-emerald-300 bg-emerald-50/50 shadow-sm': item.status === 'OK' && activeItemId !== item.id,
-                             'border-rose-300 bg-rose-50/50 shadow-sm': item.status === 'NOT_OK' && activeItemId !== item.id,
-                             'border-slate-200 bg-white shadow-sm': !item.status && activeItemId !== item.id
+                             'shadow-[0_12px_32px_rgba(0,0,0,0.12)] -translate-y-1 ring-2 ring-[#FF3B30] border-transparent z-10 bg-white': activeItemId === item.id,
+                             'border-emerald-500/30 bg-emerald-50/20 shadow-[0_2px_8px_rgba(0,0,0,0.03)]': item.status === 'OK' && activeItemId !== item.id,
+                             'border-rose-500/30 bg-rose-50/20 shadow-[0_2px_8px_rgba(0,0,0,0.03)]': item.status === 'NOT_OK' && activeItemId !== item.id,
+                             'border-black/5 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)]': !item.status && activeItemId !== item.id
                          }" 
-                         class="border rounded-2xl p-4 transition-all duration-200 relative cursor-pointer">
+                         class="border rounded-3xl p-4 ios-transition relative cursor-pointer">
                         
                         <!-- ITEM HEADER & BUTTONS -->
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div class="flex items-start space-x-3">
                                 <span class="text-slate-400 font-mono text-xs mt-0.5 min-w-[1.5rem] font-bold">#{{ item.id }}</span>
                                 <div>
-                                    <h3 class="font-bold text-base text-slate-800 leading-tight">{{ item.name }}</h3>
+                                    <h3 class="font-bold text-base text-slate-900 leading-tight tracking-tight">{{ item.name }}</h3>
                                     <p v-if="item.hint" class="text-xs text-slate-500 mt-1 font-medium">{{ item.hint }}</p>
                                 </div>
                             </div>
 
-                            <!-- TOGGLE BUTTONS (OK / NOT OK) -->
+                            <!-- TOGGLE BUTTONS (OK / NOT OK) - iOS NATIVE SEGMENT LOOK -->
                             <div class="flex items-center space-x-2 self-end sm:self-center w-full sm:w-auto shrink-0">
                                 <button @click.stop="setStatus(item, 'OK')" 
-                                        :class="item.status === 'OK' ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 border-emerald-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'" 
-                                        class="flex-1 sm:flex-initial px-4 py-2 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition border active:scale-95">
+                                        :class="item.status === 'OK' ? 'bg-[#34C759] text-white shadow-sm shadow-emerald-500/30 border-emerald-600' : 'bg-[#767680]/10 text-slate-700 hover:bg-[#767680]/15 border-transparent'" 
+                                        class="flex-1 sm:flex-initial px-4 py-2 rounded-2xl font-bold text-xs flex items-center justify-center space-x-1.5 ios-transition border active:scale-95">
                                     <i class="fa-solid fa-circle-check text-sm"></i>
                                     <span>OK</span>
                                 </button>
                                 
                                 <button @click.stop="setStatus(item, 'NOT_OK')" 
-                                        :class="item.status === 'NOT_OK' ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20 border-rose-600' : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'" 
-                                        class="flex-1 sm:flex-initial px-4 py-2 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition border active:scale-95">
+                                        :class="item.status === 'NOT_OK' ? 'bg-[#FF3B30] text-white shadow-sm shadow-red-500/30 border-red-600' : 'bg-[#767680]/10 text-slate-700 hover:bg-[#767680]/15 border-transparent'" 
+                                        class="flex-1 sm:flex-initial px-4 py-2 rounded-2xl font-bold text-xs flex items-center justify-center space-x-1.5 ios-transition border active:scale-95">
                                     <i class="fa-solid fa-triangle-exclamation text-sm"></i>
                                     <span>NOT OK</span>
                                 </button>
@@ -169,80 +197,80 @@
                         </div>
 
                         <!-- SPECIAL CUSTOM INPUTS (Radio / Checkboxes per Item Type) -->
-                        <div class="mt-3 pt-3 border-t border-slate-100 space-y-3" v-if="item.customType || item.status === 'NOT_OK' || item.comment || item.photo">
+                        <div class="mt-3.5 pt-3.5 border-t border-slate-100 space-y-3" v-if="item.customType || item.status === 'NOT_OK' || item.comment || item.photo">
                             
                             <!-- Custom Type 1: Liquids -->
                             <div v-if="item.customType === 'liquids'" class="flex flex-wrap items-center gap-2">
                                 <span class="text-xs font-bold text-slate-600 mr-1">Течности:</span>
                                 <button v-for="liq in ['Масло', 'Антифриз', 'Течност за бришачи']" :key="liq"
                                         @click.stop="toggleLiquid(item, liq)"
-                                        :class="item.liquidsChecked && item.liquidsChecked.includes(liq) ? 'bg-red-700 text-white border-red-700' : 'bg-slate-100 text-slate-600 border-slate-200 hover:bg-slate-200'"
-                                        class="px-2.5 py-1 rounded-lg text-xs font-semibold border transition flex items-center space-x-1">
+                                        :class="item.liquidsChecked && item.liquidsChecked.includes(liq) ? 'bg-[#FF3B30] text-white border-[#FF3B30]' : 'bg-[#767680]/10 text-slate-700 border-transparent hover:bg-[#767680]/15'"
+                                        class="px-3 py-1 rounded-xl text-xs font-semibold border ios-transition flex items-center space-x-1.5 active:scale-95">
                                     <i class="fa-solid" :class="item.liquidsChecked && item.liquidsChecked.includes(liq) ? 'fa-check-square' : 'fa-square'"></i>
                                     <span>{{ liq }}</span>
                                 </button>
                             </div>
 
                             <!-- Custom Type 8: Wheels / Rims -->
-                            <div v-if="item.customType === 'wheels'" class="flex flex-wrap items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+                            <div v-if="item.customType === 'wheels'" class="flex flex-wrap items-center gap-3 bg-[#F2F2F7] p-3 rounded-2xl border border-black/5 text-xs">
                                 <span class="font-bold text-slate-700">Бандажи:</span>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.wheelType" value="ALU" class="accent-red-700">
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
+                                    <input type="radio" v-model="item.wheelType" value="ALU" class="accent-[#FF3B30]">
                                     <span>ALU (Алуминиумски)</span>
                                 </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.wheelType" value="МЕТАЛНИ" class="accent-red-700">
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
+                                    <input type="radio" v-model="item.wheelType" value="МЕТАЛНИ" class="accent-[#FF3B30]">
                                     <span>МЕТАЛНИ</span>
                                 </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium ml-auto">
-                                    <input type="checkbox" v-model="item.hasHubcaps" class="accent-red-700 rounded">
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800 ml-auto">
+                                    <input type="checkbox" v-model="item.hasHubcaps" class="accent-[#FF3B30] rounded">
                                     <span>Има Раткапни</span>
                                 </label>
                             </div>
 
                             <!-- Custom Type 9: Tires -->
                             <div v-if="item.customType === 'tires'" class="flex items-center space-x-2 text-xs">
-                                <span class="font-bold text-slate-700 shrink-0">Гуми (Длабочина/Бренд):</span>
-                                <input type="text" v-model="item.tireDetails" placeholder="напр. Michelin 6mm Летни" class="flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-800 focus:outline-none focus:border-blue-500">
+                                <span class="font-bold text-slate-700 shrink-0">Гуми (Состојба/Бренд):</span>
+                                <input type="text" v-model="item.tireDetails" placeholder="напр. Michelin 6mm Летни" class="flex-1 bg-[#F2F2F7] border border-black/5 rounded-xl px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-medium">
                             </div>
 
                             <!-- Custom Type 19: Ignition -->
-                            <div v-if="item.customType === 'ignition'" class="flex flex-wrap items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+                            <div v-if="item.customType === 'ignition'" class="flex flex-wrap items-center gap-3 bg-[#F2F2F7] p-3 rounded-2xl border border-black/5 text-xs">
                                 <span class="font-bold text-slate-700">Палење:</span>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.ignitionType" value="Редовно Пали" class="accent-red-700">
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
+                                    <input type="radio" v-model="item.ignitionType" value="Редовно Пали" class="accent-[#FF3B30]">
                                     <span>Редовно Пали</span>
                                 </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.ignitionType" value="Запалено со кабли" class="accent-amber-600">
-                                    <span class="text-amber-800 font-semibold">Со кабли</span>
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-amber-800">
+                                    <input type="radio" v-model="item.ignitionType" value="Запалено со кабли" class="accent-amber-500">
+                                    <span>Со кабли</span>
                                 </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.ignitionType" value="Не пали" class="accent-rose-600">
-                                    <span class="text-rose-700 font-bold">Не пали</span>
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-bold text-[#FF3B30]">
+                                    <input type="radio" v-model="item.ignitionType" value="Не пали" class="accent-[#FF3B30]">
+                                    <span>Не пали</span>
                                 </label>
                             </div>
 
                             <!-- Custom Type 26: Spare Wheel -->
-                            <div v-if="item.customType === 'spare_wheel'" class="flex flex-wrap items-center gap-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-xs">
+                            <div v-if="item.customType === 'spare_wheel'" class="flex flex-wrap items-center gap-3 bg-[#F2F2F7] p-3 rounded-2xl border border-black/5 text-xs">
                                 <span class="font-bold text-slate-700">Опрема за гума:</span>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.spareType" value="Резервна Гума" class="accent-red-700">
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
+                                    <input type="radio" v-model="item.spareType" value="Резервна Гума" class="accent-[#FF3B30]">
                                     <span>Резервна Гума</span>
                                 </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-medium">
-                                    <input type="radio" v-model="item.spareType" value="Сет Пена / Компресор" class="accent-red-700">
+                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
+                                    <input type="radio" v-model="item.spareType" value="Сет Пена / Компресор" class="accent-[#FF3B30]">
                                     <span>Сет Пена / Компресор</span>
                                 </label>
                             </div>
 
                             <!-- Custom Type 33: Keys -->
-                            <div v-if="item.customType === 'keys'" class="flex items-center space-x-3 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                            <div v-if="item.customType === 'keys'" class="flex items-center space-x-3 text-xs bg-[#F2F2F7] p-3 rounded-2xl border border-black/5">
                                 <span class="font-bold text-slate-700">Број на клучеви:</span>
                                 <div class="flex space-x-2">
                                     <button v-for="k in [1, 2, 3]" :key="k" @click.stop="item.keyCount = k"
-                                            :class="item.keyCount === k ? 'bg-red-700 text-white font-bold' : 'bg-white text-slate-700 border border-slate-300'"
-                                            class="px-3 py-1 rounded-lg text-xs transition">
+                                            :class="item.keyCount === k ? 'bg-[#FF3B30] text-white font-bold shadow-2xs' : 'bg-white text-slate-700 border border-black/5'"
+                                            class="px-3 py-1 rounded-xl text-xs ios-transition active:scale-95">
                                         {{ k }} {{ k === 1 ? 'Клуч' : 'Клучеви' }}
                                     </button>
                                 </div>
@@ -251,17 +279,17 @@
                             <!-- Custom Type 39: Mileage -->
                             <div v-if="item.customType === 'mileage'" class="flex items-center space-x-2 text-xs">
                                 <span class="font-bold text-slate-700 shrink-0">Километража (km):</span>
-                                <input type="number" v-model="item.mileageValue" placeholder="напр. 185000" class="flex-1 bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono font-bold focus:outline-none focus:border-blue-500">
+                                <input type="number" v-model="item.mileageValue" placeholder="напр. 185000" class="flex-1 bg-[#F2F2F7] border border-black/5 rounded-xl px-3 py-1.5 text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#FF3B30]">
                             </div>
 
                             <!-- DEFECT QUICK TAGS & COMMENT AREA -->
-                            <div v-if="item.status === 'NOT_OK' || item.comment || item.photo" class="space-y-2.5 pt-2">
+                            <div v-if="item.status === 'NOT_OK' || item.comment || item.photo" class="space-y-2.5 pt-1">
                                 <!-- QUICK TAGS (SPECIFIC FOR ITEM) -->
                                 <div class="flex flex-wrap gap-1.5 items-center">
-                                    <span class="text-[11px] font-bold text-slate-500 mr-1"><i class="fa-solid fa-tags text-blue-500"></i> Брзи ознаки:</span>
+                                    <span class="text-[11px] font-bold text-slate-500 mr-1"><i class="fa-solid fa-tags text-[#FF3B30]"></i> Брзи ознаки:</span>
                                     <button v-for="tag in (item.tags || defaultPresetTags)" :key="tag"
                                             @click.stop="appendTag(item, tag)"
-                                            class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[11px] font-semibold px-2.5 py-0.5 rounded-lg transition active:scale-95 flex items-center space-x-1">
+                                            class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[11px] font-semibold px-2.5 py-1 rounded-xl ios-transition active:scale-95 flex items-center space-x-1">
                                         <i class="fa-solid fa-plus text-[9px] text-amber-600"></i>
                                         <span>{{ tag }}</span>
                                     </button>
@@ -270,25 +298,25 @@
                                 <!-- COMMENT TEXT AREA -->
                                 <div>
                                     <textarea v-model="item.comment" 
-                                              placeholder="Запишете детали за дефектот или забелешка..." 
-                                              class="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-blue-500 transition font-medium min-h-[60px]"></textarea>
+                                              placeholder="Запишете детали за дефектот..." 
+                                              class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl p-3 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] ios-transition font-medium min-h-[60px]"></textarea>
                                 </div>
 
                                 <!-- PHOTO ATTACHMENT -->
                                 <div class="flex items-center justify-between">
-                                    <label class="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center space-x-1.5">
-                                        <i class="fa-solid fa-camera text-red-700"></i>
+                                    <label class="cursor-pointer bg-[#767680]/10 hover:bg-[#767680]/15 text-slate-800 px-3.5 py-1.5 rounded-2xl text-xs font-semibold ios-transition flex items-center space-x-1.5 active:scale-95">
+                                        <i class="fa-solid fa-camera text-[#FF3B30]"></i>
                                         <span>{{ item.photo ? 'Промени слика' : 'Прикачи слика' }}</span>
                                         <input type="file" accept="image/*" @change="handlePhotoUpload($event, item)" class="hidden">
                                     </label>
 
-                                    <button v-if="item.photo" @click.stop="item.photo = null" class="text-rose-600 hover:text-rose-800 text-xs font-semibold flex items-center space-x-1">
-                                        <i class="fa-solid fa-trash-can"></i>
+                                    <button v-if="item.photo" @click.stop="item.photo = null" class="text-[#FF3B30] hover:text-red-700 text-xs font-semibold flex items-center space-x-1 active:scale-95">
+                                        <i class="fa-solid fa-trash-can text-[11px]"></i>
                                         <span>Избриши слика</span>
                                     </button>
                                 </div>
 
-                                <div v-if="item.photo" class="mt-2 relative rounded-xl overflow-hidden border border-slate-200 max-h-48 bg-black/5 flex justify-center">
+                                <div v-if="item.photo" class="mt-2 relative rounded-2xl overflow-hidden border border-black/5 max-h-48 bg-black/5 flex justify-center">
                                     <img :src="item.photo" class="max-h-48 object-contain">
                                 </div>
                             </div>
@@ -300,13 +328,13 @@
 
                 <!-- SAVE / ACTION BUTTONS FOOTER (ONCE AT BOTTOM OF INSPECTION FORM) -->
                 <div class="pt-6 flex flex-col sm:flex-row gap-3">
-                    <button @click="saveInspection()" class="flex-1 bg-gradient-to-r from-red-700 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-red-700/30 active:scale-95 transition flex items-center justify-center space-x-2">
+                    <button @click="saveInspection()" class="flex-1 bg-[#FF3B30] hover:bg-[#E03126] text-white py-4 rounded-3xl font-bold text-sm shadow-md shadow-red-500/20 active:scale-95 ios-transition flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-floppy-disk text-base"></i>
                         <span>Зачувај го Извештајот</span>
                     </button>
                     
-                    <button @click="openSummaryModal()" class="bg-white border-2 border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-6 py-4 rounded-2xl font-bold text-sm shadow-sm active:scale-95 transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-file-invoice"></i>
+                    <button @click="openSummaryModal()" class="bg-white border border-black/5 hover:bg-slate-50 text-slate-800 px-6 py-4 rounded-3xl font-bold text-sm shadow-2xs active:scale-95 ios-transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-file-invoice text-base text-[#FF3B30]"></i>
                         <span>Преглед за Принт</span>
                     </button>
                 </div>
@@ -316,51 +344,51 @@
             <!-- TAB 2: SAVED INSPECTIONS ARCHIVE -->
             <div v-if="currentTab === 'history'" class="space-y-4">
                 <div class="flex items-center justify-between">
-                    <h2 class="font-bold text-slate-900 text-lg flex items-center space-x-2">
-                        <i class="fa-solid fa-box-archive text-red-700"></i>
+                    <h2 class="font-extrabold text-slate-900 text-lg flex items-center space-x-2 tracking-tight">
+                        <i class="fa-solid fa-box-archive text-[#FF3B30]"></i>
                         <span>Зачувани Извештаи</span>
                     </h2>
-                    <span class="text-xs text-slate-500 font-medium">{{ savedInspections.length }} вкупно</span>
+                    <span class="text-xs text-slate-500 font-semibold bg-slate-200/60 px-2.5 py-0.5 rounded-full">{{ savedInspections.length }} вкупно</span>
                 </div>
 
-                <!-- SEARCH FIELD -->
+                <!-- SEARCH FIELD (iOS SEARCH BAR STYLE) -->
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" v-model="searchQuery" placeholder="Пребарај по марка, VIN или инспектор..." class="w-full bg-white border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-blue-500 shadow-sm">
+                    <input type="text" v-model="searchQuery" placeholder="Пребарај по марка, VIN или инспектор..." class="w-full bg-[#E3E3E8]/60 border border-black/5 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] ios-transition">
                 </div>
 
                 <!-- EMPTY STATE -->
-                <div v-if="filteredHistory.length === 0" class="bg-white border border-slate-200 rounded-2xl p-8 text-center space-y-3">
-                    <div class="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400 text-xl">
+                <div v-if="filteredHistory.length === 0" class="bg-white border border-black/5 rounded-3xl p-8 text-center space-y-3 shadow-2xs">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400 text-xl">
                         <i class="fa-solid fa-folder-open"></i>
                     </div>
-                    <p class="text-sm font-semibold text-slate-600">Нема пронајдено извештаи</p>
-                    <p class="text-xs text-slate-400">Започнете нова инспекција за да го зачувате првиот извештај.</p>
+                    <p class="text-sm font-bold text-slate-700">Нема пронајдено извештаи</p>
+                    <p class="text-xs text-slate-400 font-medium">Започнете нова инспекција за да го зачувате првиот извештај.</p>
                 </div>
 
                 <!-- HISTORY LIST CARDS -->
                 <div class="space-y-3">
-                    <div v-for="insp in filteredHistory" :key="insp.id" class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm hover:border-blue-300 transition space-y-3">
+                    <div v-for="insp in filteredHistory" :key="insp.id" class="bg-white border border-black/5 rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-red-300 ios-transition space-y-3">
                         <div class="flex items-start justify-between">
                             <div>
-                                <h3 class="font-bold text-slate-900 text-base leading-tight">{{ insp.vehicle.makeModel || 'Неименувано возило' }}</h3>
-                                <p class="text-xs font-mono text-slate-500 mt-0.5">VIN: {{ insp.vehicle.vin || '-----' }}</p>
+                                <h3 class="font-bold text-slate-900 text-base leading-tight tracking-tight">{{ insp.vehicle.makeModel || 'Неименувано возило' }}</h3>
+                                <p class="text-xs font-mono text-slate-500 mt-0.5 uppercase tracking-wide">VIN: {{ insp.vehicle.vin || '-----' }}</p>
                             </div>
-                            <span class="text-[11px] font-semibold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">{{ insp.date }}</span>
+                            <span class="text-[11px] font-semibold text-slate-500 bg-[#F2F2F7] border border-black/5 px-2.5 py-0.5 rounded-lg">{{ insp.date }}</span>
                         </div>
 
-                        <div class="flex items-center justify-between text-xs pt-2 border-t border-slate-100">
+                        <div class="flex items-center justify-between text-xs pt-2.5 border-t border-slate-100">
                             <div class="flex space-x-3">
-                                <span class="text-emerald-600 font-semibold"><i class="fa-solid fa-circle-check"></i> {{ getStatCount(insp, 'OK') }} OK</span>
-                                <span class="text-rose-600 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> {{ getStatCount(insp, 'NOT_OK') }} Дефекти</span>
+                                <span class="text-[#34C759] font-bold"><i class="fa-solid fa-circle-check mr-1"></i>{{ getStatCount(insp, 'OK') }} OK</span>
+                                <span class="text-[#FF3B30] font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ getStatCount(insp, 'NOT_OK') }} Дефекти</span>
                             </div>
 
                             <div class="flex items-center space-x-2">
-                                <button @click="loadSavedInspection(insp)" class="bg-blue-50 text-red-700 hover:bg-blue-100 border border-blue-200 px-3 py-1 rounded-lg font-bold transition flex items-center space-x-1">
-                                    <i class="fa-solid fa-folder-open"></i>
+                                <button @click="loadSavedInspection(insp)" class="bg-red-50 text-[#FF3B30] hover:bg-red-100 border border-red-200/60 px-3.5 py-1.5 rounded-xl font-bold text-xs ios-transition flex items-center space-x-1 active:scale-95">
+                                    <i class="fa-solid fa-folder-open text-xs"></i>
                                     <span>Отвори</span>
                                 </button>
-                                <button @click="deleteSavedInspection(insp.id)" class="text-slate-400 hover:text-rose-600 p-1 transition">
+                                <button @click="deleteSavedInspection(insp.id)" class="text-slate-400 hover:text-[#FF3B30] p-1.5 ios-transition active:scale-95">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
@@ -371,75 +399,73 @@
 
         </main>
 
-        <!-- PRINTABLE REPORT MODAL -->
-        <div v-if="showSummaryModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-            <div class="bg-white border border-slate-200 w-full max-w-2xl rounded-2xl shadow-2xl p-6 space-y-6 my-auto max-h-[90vh] overflow-y-auto">
+        <!-- PRINTABLE REPORT MODAL (iOS MODAL SHEET STYLE) -->
+        <div v-if="showSummaryModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+            <div class="bg-white border border-black/5 w-full max-w-2xl rounded-[28px] shadow-2xl p-6 space-y-6 my-auto max-h-[90vh] overflow-y-auto">
                 <!-- MODAL HEADER -->
-                <div class="flex items-center justify-between border-b border-slate-200 pb-4 no-print">
-                    <h2 class="font-extrabold text-slate-900 text-lg flex items-center space-x-2">
-                        <i class="fa-solid fa-file-contract text-red-700"></i>
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4 no-print">
+                    <h2 class="font-extrabold text-slate-900 text-lg flex items-center space-x-2 tracking-tight">
+                        <i class="fa-solid fa-file-contract text-[#FF3B30]"></i>
                         <span>Преглед на Извештај</span>
                     </h2>
                     <div class="flex items-center space-x-2">
-                        <button @click="printReport()" class="bg-red-700 hover:bg-blue-700 text-white px-3.5 py-1.5 rounded-xl font-bold text-xs flex items-center space-x-1.5 transition">
+                        <button @click="printReport()" class="bg-[#FF3B30] hover:bg-[#E03126] text-white px-4 py-1.5 rounded-xl font-bold text-xs flex items-center space-x-1.5 active:scale-95 ios-transition shadow-sm">
                             <i class="fa-solid fa-print"></i>
                             <span>Испечати / PDF</span>
                         </button>
-                        <button @click="showSummaryModal = false" class="text-slate-400 hover:text-slate-600 p-1">
-                            <i class="fa-solid fa-xmark text-lg"></i>
+                        <button @click="showSummaryModal = false" class="text-slate-400 hover:text-slate-600 p-1.5">
+                            <i class="fa-solid fa-xmark text-xl"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- PRINT HEADER ONLY -->
                 <div class="hidden print-only text-center border-b pb-4">
-                    <h1 class="text-2xl font-bold uppercase">AutoCheck MK - Извештај за инспекција</h1>
+                    <h1 class="text-2xl font-bold uppercase tracking-tight">AutoCheck MK - Извештај за инспекција</h1>
                     <p class="text-xs text-gray-500">Записник за состојба на увезено возило</p>
                 </div>
 
                 <!-- REPORT VEHICLE METADATA SUMMARY -->
-                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 grid grid-cols-2 gap-3 text-xs">
+                <div class="bg-[#F2F2F7] border border-black/5 rounded-2xl p-4 grid grid-cols-2 gap-3 text-xs">
                     <div>
                         <span class="text-slate-400 font-semibold block">Марка и Модел:</span>
                         <span class="font-bold text-slate-900 text-sm">{{ activeInspection.vehicle.makeModel || 'Возило не е внесено' }}</span>
                     </div>
                     <div>
                         <span class="text-slate-400 font-semibold block">Број на Шасија (VIN):</span>
-                        <span class="font-mono font-bold text-slate-900">{{ activeInspection.vehicle.vin || '-----' }}</span>
+                        <span class="font-mono font-bold text-slate-900 text-sm uppercase tracking-wider">{{ activeInspection.vehicle.vin || '-----' }}</span>
                     </div>
                     <div>
                         <span class="text-slate-400 font-semibold block">Прегледал (Инспектор):</span>
                         <span class="font-semibold text-slate-800">{{ activeInspection.inspector || 'Ненаведен' }}</span>
                     </div>
                     <div>
-                        <span class="text-slate-400 font-semibold block">Датум на инспекција:</span>
+                        <span class="text-slate-400 font-semibold block">Датум:</span>
                         <span class="font-semibold text-slate-800">{{ activeInspection.date }}</span>
                     </div>
                 </div>
 
-                <!-- SUMMARY STATS BAR -->
-                <div class="flex items-center justify-around bg-slate-100 p-3 rounded-xl text-xs font-bold">
-                    <div class="text-emerald-700"><i class="fa-solid fa-circle-check"></i> {{ okCount }} OK / Исправни</div>
-                    <div class="text-rose-700"><i class="fa-solid fa-triangle-exclamation"></i> {{ notOkCount }} Оштетувања / Дефекти</div>
-                    <div class="text-slate-600"><i class="fa-solid fa-list-check"></i> {{ checkedCount }}/{{ activeInspection.items.length }} Проверени</div>
-                </div>
-
-                <!-- LIST OF DEFECTS / NOT OK ITEMS -->
+                <!-- DEFECTS SUMMARY TABLE IN REPORT -->
                 <div class="space-y-3">
-                    <h3 class="font-bold text-slate-900 text-sm border-b border-slate-200 pb-2">Евидентирани дефекти и забелешки ({{ notOkCount }}):</h3>
-                    
-                    <div v-if="notOkCount === 0" class="text-center py-4 text-xs text-slate-400 italic">
-                        Нема регистрирано оштетувања или дефекти. Возилото е во одлична состојба!
+                    <h3 class="font-bold text-slate-900 text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-triangle-exclamation text-[#FF3B30]"></i>
+                        <span>Евидентирани оштетувања / забелешки ({{ notOkCount }})</span>
+                    </h3>
+
+                    <div v-if="notOkCount === 0" class="text-xs text-emerald-600 font-semibold bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-center">
+                        <i class="fa-solid fa-circle-check mr-1"></i> Возилото е во одлична состојба! Нема регистрирано дефекти.
                     </div>
 
-                    <div v-for="item in activeInspection.items.filter(i => i.status === 'NOT_OK')" :key="item.id" class="border border-rose-200 bg-rose-50/50 rounded-xl p-3 text-xs space-y-2">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-slate-900">#{{ item.id }} - {{ item.name }}</span>
-                            <span class="bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded border border-rose-200">DEFECT</span>
-                        </div>
-                        <p class="text-slate-700 font-medium bg-white p-2 rounded-lg border border-rose-100">{{ item.comment || 'Нема запишано дополнителен коментар.' }}</p>
-                        <div v-if="item.photo" class="max-h-32 flex justify-start">
-                            <img :src="item.photo" class="max-h-32 rounded-lg border border-slate-200 object-contain">
+                    <div v-else class="space-y-2">
+                        <div v-for="item in activeInspection.items.filter(i => i.status === 'NOT_OK')" :key="item.id" class="border border-slate-200 rounded-xl p-3 text-xs space-y-1">
+                            <div class="flex items-center justify-between font-bold text-slate-900">
+                                <span>#{{ item.id }} {{ item.name }}</span>
+                                <span class="text-[#FF3B30] font-bold text-[10px] bg-red-50 border border-red-100 px-2 py-0.5 rounded-md">DEFECT</span>
+                            </div>
+                            <p v-if="item.comment" class="text-slate-700 bg-slate-50 p-2 rounded-lg font-medium">{{ item.comment }}</p>
+                            <div v-if="item.photo" class="pt-1">
+                                <img :src="item.photo" class="max-h-24 rounded-lg border object-contain">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -458,38 +484,38 @@
             </div>
         </div>
 
-        <!-- VEHICLE EDIT MODAL -->
-        <div v-if="showVehicleModal" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4">
-            <div class="bg-white border border-slate-200 w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+        <!-- VEHICLE EDIT MODAL (iOS DIALOG SHEET) -->
+        <div v-if="showVehicleModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
+            <div class="bg-white border border-black/5 w-full max-w-md rounded-[28px] p-6 shadow-2xl space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="font-bold text-slate-900 text-base flex items-center space-x-2">
-                        <i class="fa-solid fa-id-card text-red-700"></i>
+                    <h3 class="font-extrabold text-slate-900 text-base flex items-center space-x-2 tracking-tight">
+                        <i class="fa-solid fa-id-card text-[#FF3B30]"></i>
                         <span>Податоци за возилото</span>
                     </h3>
-                    <button @click="showVehicleModal = false" class="text-slate-400 hover:text-slate-700">
+                    <button @click="showVehicleModal = false" class="text-slate-400 hover:text-slate-700 p-1">
                         <i class="fa-solid fa-xmark text-lg"></i>
                     </button>
                 </div>
 
-                <div class="space-y-3 text-sm">
+                <div class="space-y-3.5 text-sm">
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Марка и Модел:</label>
-                        <input type="text" v-model="activeInspection.vehicle.makeModel" placeholder="напр. Volkswagen Golf 7" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-blue-500 font-medium">
+                        <label class="block font-bold text-slate-700 mb-1 text-xs">Марка и Модел:</label>
+                        <input type="text" v-model="activeInspection.vehicle.makeModel" placeholder="напр. Volkswagen Golf 7" class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl px-3.5 py-2.5 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-semibold text-xs ios-transition">
                     </div>
 
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Број на шасија (VIN):</label>
-                        <input type="text" v-model="activeInspection.vehicle.vin" placeholder="напр. WVWZZZ1KZ..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 font-mono uppercase focus:outline-none focus:border-blue-500">
+                        <label class="block font-bold text-slate-700 mb-1 text-xs">Број на шасија (VIN):</label>
+                        <input type="text" v-model="activeInspection.vehicle.vin" placeholder="напр. WVWZZZ1KZ..." class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl px-3.5 py-2.5 text-slate-900 font-mono uppercase focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-bold text-xs ios-transition">
                     </div>
 
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Прегледал (Инспектор):</label>
-                        <input type="text" v-model="activeInspection.inspector" placeholder="Име и Презиме" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-slate-900 focus:outline-none focus:border-blue-500 font-medium">
+                        <label class="block font-bold text-slate-700 mb-1 text-xs">Прегледал (Инспектор):</label>
+                        <input type="text" v-model="activeInspection.inspector" placeholder="Име и Презиме" class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl px-3.5 py-2.5 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-semibold text-xs ios-transition">
                     </div>
                 </div>
 
                 <div class="pt-2 flex justify-end space-x-2">
-                    <button @click="showVehicleModal = false" class="bg-red-700 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-xs transition">
+                    <button @click="showVehicleModal = false" class="bg-[#FF3B30] hover:bg-[#E03126] text-white font-bold px-6 py-2.5 rounded-2xl text-xs active:scale-95 ios-transition shadow-sm">
                         Потврди
                     </button>
                 </div>
