@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoCheck MK - Apple iOS Theme</title>
+    <title>AutoCheck MK - Инспекција на Возила</title>
+    <!-- Google Fonts - Google Sans & Fallbacks -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/google-sans@5.0.1/index.css">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -12,751 +17,709 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     
     <style>
-        /* Apple System Typography Stack */
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
             background-color: #F2F2F7;
             -webkit-tap-highlight-color: transparent;
         }
-        * {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        *, input, button, select, textarea {
+            font-family: 'Google Sans', 'Google Sans Text', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
             letter-spacing: -0.01em;
         } 
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Smooth transitions matching iOS friction */
-        .ios-transition {
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        /* Print Stylesheet */
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            body { background: white !important; color: black !important; }
+            body { background-color: #ffffff !important; }
+            .print-card { break-inside: avoid; page-break-inside: avoid; }
         }
+        .print-only { display: none; }
     </style>
 </head>
-<body class="bg-[#F2F2F7] text-slate-900 min-h-screen font-sans pb-28 antialiased selection:bg-red-500 selection:text-white">
-    <div id="app" class="max-w-md md:max-w-4xl mx-auto min-h-screen flex flex-col">
+<body class="text-slate-900 antialiased selection:bg-red-500 selection:text-white pb-12">
 
-        <!-- HEADER BAR (APPLE FROSTED GLASS STICKY HEADER) -->
-        <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-black/5 px-4 py-3 space-y-2.5 no-print shadow-sm ios-transition">
-            <!-- HEADER TOP ROW -->
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-[#FF3B30] flex items-center justify-center shadow-sm shadow-red-500/30">
-                        <i class="fa-solid fa-car-side text-white text-base"></i>
-                    </div>
-                    <div>
-                        <h1 class="font-bold text-base leading-none tracking-tight text-slate-900 flex items-center gap-1.5">
-                            AutoCheck
-                            <span class="text-[10px] font-bold text-[#FF3B30] px-1.5 py-0.5 rounded-full bg-red-50 border border-red-100 uppercase tracking-wider">MK</span>
-                        </h1>
-                        <p class="text-[11px] text-slate-400 font-medium">Инспекција на увезени возила</p>
-                    </div>
+<div id="app" class="min-h-screen flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl bg-[#F2F2F7]">
+
+    <!-- ================= STICKY HEADER ================= -->
+    <header class="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-slate-200/80 px-4 pt-3 pb-2.5 shadow-sm no-print">
+        <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-md shadow-red-500/20">
+                    <i class="fa-solid font-bold fa-car-side text-lg"></i>
                 </div>
-                
-                <div class="flex items-center space-x-2">
-                    <button @click="currentTab = 'history'" 
-                            :class="currentTab === 'history' ? 'bg-[#FF3B30] text-white shadow-sm' : 'bg-[#767680]/10 text-slate-700 hover:bg-[#767680]/15'" 
-                            class="px-3 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1.5 ios-transition active:scale-95">
-                        <i class="fa-solid fa-folder-closed text-xs"></i>
-                        <span class="hidden sm:inline">Архива</span>
-                        <span :class="currentTab === 'history' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'" class="text-[10px] font-bold px-1.5 py-0.2 rounded-full">{{ savedInspections.length }}</span>
-                    </button>
-                    <button @click="createNewInspection()" class="bg-[#FF3B30] hover:bg-[#E03126] text-white px-3.5 py-1.5 rounded-full text-xs font-semibold flex items-center space-x-1 shadow-sm active:scale-95 ios-transition">
-                        <i class="fa-solid fa-plus text-xs"></i>
-                        <span>Нова</span>
-                    </button>
+                <div>
+                    <h1 class="text-base font-bold text-slate-900 leading-tight">AutoCheck MK</h1>
+                    <p class="text-[11px] text-slate-500 font-medium">Проверка & Следење на возила</p>
                 </div>
             </div>
 
-            <!-- VEHICLE DATA DISPLAY IN STICKY HEADER (READ-ONLY CLEAN TEXT DISPLAY) -->
-            <div v-if="currentTab === 'form'" class="bg-[#767680]/5 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2 text-xs border border-black/5">
-                <div class="flex items-center space-x-3 overflow-x-auto hide-scrollbar">
-                    <div class="flex items-center space-x-1.5 font-bold text-slate-900 text-sm">
-                        <i class="fa-solid fa-car text-[#FF3B30]"></i>
-                        <span>{{ activeInspection.vehicle.makeModel || 'Возило не е внесено' }}</span>
-                    </div>
-                    <span class="text-slate-300">|</span>
-                    <div class="flex items-center space-x-1 font-mono text-slate-600">
-                        <span class="text-slate-400 font-semibold text-[11px]">VIN:</span>
-                        <span class="font-bold text-slate-800 text-[11px] uppercase tracking-wider">{{ activeInspection.vehicle.vin || '-----' }}</span>
-                    </div>
-                    <span class="text-slate-300 hidden sm:inline">|</span>
-                    <div class="hidden sm:flex items-center space-x-1 text-slate-600">
-                        <span class="text-slate-400 font-semibold text-[11px]">Прегледал:</span>
-                        <span class="font-semibold text-slate-800 text-[11px]">{{ activeInspection.inspector || 'Ненаведен' }}</span>
-                    </div>
-                </div>
+            <!-- Action buttons -->
+            <div class="flex items-center gap-1.5">
+                <button @click="showModal = 'editVehicle'" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition active:scale-95 flex items-center gap-1">
+                    <i class="fa-solid fa-pen-to-square text-red-500"></i>
+                    <span>Возило</span>
+                </button>
 
-                <div class="flex items-center space-x-2 shrink-0">
-                    <span class="text-[11px] text-slate-500 bg-white border border-black/5 px-2 py-0.5 rounded-lg font-medium shadow-2xs">{{ activeInspection.date }}</span>
-                    <button @click="openVehicleEditModal()" class="text-[#FF3B30] bg-red-50 hover:bg-red-100 border border-red-200/60 px-2.5 py-0.5 rounded-lg font-bold text-[11px] ios-transition flex items-center space-x-1 active:scale-95">
-                        <i class="fa-solid fa-pen text-[10px]"></i>
-                        <span>Уреди</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- CATEGORY & SEARCH FILTERS (APPLE SEGMENTED PICKER STYLE) -->
-            <div v-if="currentTab === 'form'" class="flex items-center justify-between gap-2 overflow-x-auto hide-scrollbar pt-0.5">
-                <div class="bg-[#E5E5EA] p-1 rounded-2xl flex space-x-1 shrink-0">
-                    <button @click="categoryFilter = 'ALL'" 
-                            :class="categoryFilter === 'ALL' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
-                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition">
-                        Сите ({{ activeInspection.items.length }})
-                    </button>
-                    <button @click="categoryFilter = 'НАДВОРЕШНА ПРОВЕРКА'" 
-                            :class="categoryFilter === 'НАДВОРЕШНА ПРОВЕРКА' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
-                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition flex items-center space-x-1">
-                        <i class="fa-solid fa-car-on text-[11px]"></i>
-                        <span>Надворешна</span>
-                    </button>
-                    <button @click="categoryFilter = 'ВНАТРЕШНОСТ'" 
-                            :class="categoryFilter === 'ВНАТРЕШНОСТ' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
-                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition flex items-center space-x-1">
-                        <i class="fa-solid fa-couch text-[11px]"></i>
-                        <span>Внатрешност</span>
-                    </button>
-                    <button @click="categoryFilter = 'DEFECTS'" 
-                            :class="categoryFilter === 'DEFECTS' ? 'bg-white text-[#FF3B30] shadow-sm font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'" 
-                            class="px-3 py-1 rounded-xl text-xs whitespace-nowrap ios-transition flex items-center space-x-1">
-                        <i class="fa-solid fa-triangle-exclamation text-[11px] text-[#FF3B30]"></i>
-                        <span>Дефекти ({{ notOkCount }})</span>
-                    </button>
-                </div>
-
-                <button @click="markAllRemainingOk()" class="text-xs text-[#FF3B30] bg-red-50 hover:bg-red-100 border border-red-200/60 px-3 py-1.5 rounded-2xl whitespace-nowrap font-bold flex items-center space-x-1 shadow-2xs shrink-0 active:scale-95 ios-transition">
-                    <i class="fa-solid fa-double-check text-[11px]"></i>
-                    <span>Останати OK</span>
+                <button @click="showArchive = !showArchive" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full font-medium transition active:scale-95 flex items-center gap-1">
+                    <i class="fa-solid fa-folder-closed text-slate-500"></i>
+                    <span>Архива</span>
+                    <span v-if="savedReports.length" class="ml-0.5 px-1.5 py-0.2 bg-red-500 text-white rounded-full text-[10px] font-bold">{{ savedReports.length }}</span>
                 </button>
             </div>
-        </header>
+        </div>
 
-        <!-- MAIN CONTENT AREA -->
-        <main class="flex-1 p-4 space-y-4">
+        <!-- Vehicle Info Text Display Banner -->
+        <div class="bg-slate-100/90 rounded-xl p-2.5 mb-2 border border-slate-200/60 flex flex-wrap items-center justify-between gap-y-1 text-xs">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-slate-900 text-sm tracking-tight">{{ vehicle.brandModel || 'Марка и Модел (Недефинирано)' }}</span>
+            </div>
+            <div class="flex items-center gap-3 text-slate-600 font-medium text-[11px]">
+                <span><strong class="text-slate-400">VIN:</strong> {{ vehicle.vin || '—' }}</span>
+                <span><strong class="text-slate-400">Прегледал:</strong> <span class="uppercase font-semibold text-slate-800">{{ vehicle.inspector || '—' }}</span></span>
+                <span><i class="fa-regular fa-calendar text-slate-400 mr-0.5"></i> {{ vehicle.date }}</span>
+            </div>
+        </div>
 
-            <!-- TAB 1: ACTIVE INSPECTION -->
-            <div v-if="currentTab === 'form'" class="space-y-4">
+        <!-- Category Filter Horizontal Scroll Pills -->
+        <div class="flex items-center gap-1.5 overflow-x-auto hide-scrollbar py-0.5">
+            <button 
+                v-for="cat in categories" 
+                :key="cat.id"
+                @click="activeCategory = cat.id"
+                :class="[
+                    activeCategory === cat.id 
+                        ? 'bg-red-600 text-white font-semibold shadow-sm' 
+                        : 'bg-white/80 text-slate-600 hover:bg-slate-100 font-medium border border-slate-200/80',
+                    'px-3 py-1.5 rounded-full text-xs whitespace-nowrap transition-all duration-150 active:scale-95 flex items-center gap-1.5'
+                ]"
+            >
+                <span>{{ cat.label }}</span>
+                <span 
+                    :class="activeCategory === cat.id ? 'bg-white/20 text-white' : 'bg-slate-200/70 text-slate-600'"
+                    class="px-1.5 py-0.2 rounded-full text-[10px] font-bold"
+                >
+                    {{ getCategoryCount(cat.id) }}
+                </span>
+            </button>
+        </div>
+    </header>
 
-                <!-- OVERALL PROGRESS CARD (iOS CARD STYLE) -->
-                <div class="bg-white border border-black/5 rounded-3xl p-4 space-y-2.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-500 font-semibold">Проверени ставки: <strong class="text-slate-900 font-bold">{{ checkedCount }} / {{ activeInspection.items.length }}</strong></span>
-                        <div class="flex space-x-3 font-bold">
-                            <span class="text-[#34C759] flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> {{ okCount }} Во ред</span>
-                            <span class="text-[#FF3B30] flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i> {{ notOkCount }} Дефект</span>
-                        </div>
-                    </div>
-                    <div class="w-full bg-[#E5E5EA] rounded-full h-2.5 overflow-hidden flex">
-                        <div class="bg-[#34C759] h-full ios-transition" :style="{ width: (okCount / activeInspection.items.length * 100) + '%' }"></div>
-                        <div class="bg-[#FF3B30] h-full ios-transition" :style="{ width: (notOkCount / activeInspection.items.length * 100) + '%' }"></div>
-                    </div>
-                </div>
+    <!-- MAIN CONTENT AREA -->
+    <main class="p-4 space-y-3 flex-1 no-print">
 
-                <!-- CHECKLIST ITEM CARDS WITH ELEVATED ACTIVE CARD STYLING -->
-                <div class="space-y-3">
-                    <div v-for="(item, index) in filteredItems" :key="item.id" 
-                         @click="activeItemId = item.id"
-                         :class="{
-                             'shadow-[0_12px_32px_rgba(0,0,0,0.12)] -translate-y-1 ring-2 ring-[#FF3B30] border-transparent z-10 bg-white': activeItemId === item.id,
-                             'border-emerald-500/30 bg-emerald-50/20 shadow-[0_2px_8px_rgba(0,0,0,0.03)]': item.status === 'OK' && activeItemId !== item.id,
-                             'border-rose-500/30 bg-rose-50/20 shadow-[0_2px_8px_rgba(0,0,0,0.03)]': item.status === 'NOT_OK' && activeItemId !== item.id,
-                             'border-black/5 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.04)]': !item.status && activeItemId !== item.id
-                         }" 
-                         class="border rounded-3xl p-4 ios-transition relative cursor-pointer">
-                        
-                        <!-- ITEM HEADER & BUTTONS -->
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                            <div class="flex items-start space-x-3">
-                                <span class="text-slate-400 font-mono text-xs mt-0.5 min-w-[1.5rem] font-bold">#{{ item.id }}</span>
-                                <div>
-                                    <h3 class="font-bold text-base text-slate-900 leading-tight tracking-tight">{{ item.name }}</h3>
-                                    <p v-if="item.hint" class="text-xs text-slate-500 mt-1 font-medium">{{ item.hint }}</p>
-                                </div>
-                            </div>
-
-                            <!-- TOGGLE BUTTONS (OK / NOT OK) - iOS NATIVE SEGMENT LOOK -->
-                            <div class="flex items-center space-x-2 self-end sm:self-center w-full sm:w-auto shrink-0">
-                                <button @click.stop="setStatus(item, 'OK')" 
-                                        :class="item.status === 'OK' ? 'bg-[#34C759] text-white shadow-sm shadow-emerald-500/30 border-emerald-600' : 'bg-[#767680]/10 text-slate-700 hover:bg-[#767680]/15 border-transparent'" 
-                                        class="flex-1 sm:flex-initial px-4 py-2 rounded-2xl font-bold text-xs flex items-center justify-center space-x-1.5 ios-transition border active:scale-95">
-                                    <i class="fa-solid fa-circle-check text-sm"></i>
-                                    <span>OK</span>
-                                </button>
-                                
-                                <button @click.stop="setStatus(item, 'NOT_OK')" 
-                                        :class="item.status === 'NOT_OK' ? 'bg-[#FF3B30] text-white shadow-sm shadow-red-500/30 border-red-600' : 'bg-[#767680]/10 text-slate-700 hover:bg-[#767680]/15 border-transparent'" 
-                                        class="flex-1 sm:flex-initial px-4 py-2 rounded-2xl font-bold text-xs flex items-center justify-center space-x-1.5 ios-transition border active:scale-95">
-                                    <i class="fa-solid fa-triangle-exclamation text-sm"></i>
-                                    <span>NOT OK</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- SPECIAL CUSTOM INPUTS (Radio / Checkboxes per Item Type) -->
-                        <div class="mt-3.5 pt-3.5 border-t border-slate-100 space-y-3" v-if="item.customType || item.status === 'NOT_OK' || item.comment || item.photo">
-                            
-                            <!-- Custom Type 1: Liquids -->
-                            <div v-if="item.customType === 'liquids'" class="flex flex-wrap items-center gap-2">
-                                <span class="text-xs font-bold text-slate-600 mr-1">Течности:</span>
-                                <button v-for="liq in ['Масло', 'Антифриз', 'Течност за бришачи']" :key="liq"
-                                        @click.stop="toggleLiquid(item, liq)"
-                                        :class="item.liquidsChecked && item.liquidsChecked.includes(liq) ? 'bg-[#FF3B30] text-white border-[#FF3B30]' : 'bg-[#767680]/10 text-slate-700 border-transparent hover:bg-[#767680]/15'"
-                                        class="px-3 py-1 rounded-xl text-xs font-semibold border ios-transition flex items-center space-x-1.5 active:scale-95">
-                                    <i class="fa-solid" :class="item.liquidsChecked && item.liquidsChecked.includes(liq) ? 'fa-check-square' : 'fa-square'"></i>
-                                    <span>{{ liq }}</span>
-                                </button>
-                            </div>
-
-                            <!-- Custom Type 8: Wheels / Rims -->
-                            <div v-if="item.customType === 'wheels'" class="flex flex-wrap items-center gap-3 bg-[#F2F2F7] p-3 rounded-2xl border border-black/5 text-xs">
-                                <span class="font-bold text-slate-700">Бандажи:</span>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
-                                    <input type="radio" v-model="item.wheelType" value="ALU" class="accent-[#FF3B30]">
-                                    <span>ALU (Алуминиумски)</span>
-                                </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
-                                    <input type="radio" v-model="item.wheelType" value="МЕТАЛНИ" class="accent-[#FF3B30]">
-                                    <span>МЕТАЛНИ</span>
-                                </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800 ml-auto">
-                                    <input type="checkbox" v-model="item.hasHubcaps" class="accent-[#FF3B30] rounded">
-                                    <span>Има Раткапни</span>
-                                </label>
-                            </div>
-
-                            <!-- Custom Type 9: Tires -->
-                            <div v-if="item.customType === 'tires'" class="flex items-center space-x-2 text-xs">
-                                <span class="font-bold text-slate-700 shrink-0">Гуми (Состојба/Бренд):</span>
-                                <input type="text" v-model="item.tireDetails" placeholder="напр. Michelin 6mm Летни" class="flex-1 bg-[#F2F2F7] border border-black/5 rounded-xl px-3 py-1.5 text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-medium">
-                            </div>
-
-                            <!-- Custom Type 19: Ignition -->
-                            <div v-if="item.customType === 'ignition'" class="flex flex-wrap items-center gap-3 bg-[#F2F2F7] p-3 rounded-2xl border border-black/5 text-xs">
-                                <span class="font-bold text-slate-700">Палење:</span>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
-                                    <input type="radio" v-model="item.ignitionType" value="Редовно Пали" class="accent-[#FF3B30]">
-                                    <span>Редовно Пали</span>
-                                </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-amber-800">
-                                    <input type="radio" v-model="item.ignitionType" value="Запалено со кабли" class="accent-amber-500">
-                                    <span>Со кабли</span>
-                                </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-bold text-[#FF3B30]">
-                                    <input type="radio" v-model="item.ignitionType" value="Не пали" class="accent-[#FF3B30]">
-                                    <span>Не пали</span>
-                                </label>
-                            </div>
-
-                            <!-- Custom Type 26: Spare Wheel -->
-                            <div v-if="item.customType === 'spare_wheel'" class="flex flex-wrap items-center gap-3 bg-[#F2F2F7] p-3 rounded-2xl border border-black/5 text-xs">
-                                <span class="font-bold text-slate-700">Опрема за гума:</span>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
-                                    <input type="radio" v-model="item.spareType" value="Резервна Гума" class="accent-[#FF3B30]">
-                                    <span>Резервна Гума</span>
-                                </label>
-                                <label class="flex items-center space-x-1.5 cursor-pointer font-semibold text-slate-800">
-                                    <input type="radio" v-model="item.spareType" value="Сет Пена / Компресор" class="accent-[#FF3B30]">
-                                    <span>Сет Пена / Компресор</span>
-                                </label>
-                            </div>
-
-                            <!-- Custom Type 33: Keys -->
-                            <div v-if="item.customType === 'keys'" class="flex items-center space-x-3 text-xs bg-[#F2F2F7] p-3 rounded-2xl border border-black/5">
-                                <span class="font-bold text-slate-700">Број на клучеви:</span>
-                                <div class="flex space-x-2">
-                                    <button v-for="k in [1, 2, 3]" :key="k" @click.stop="item.keyCount = k"
-                                            :class="item.keyCount === k ? 'bg-[#FF3B30] text-white font-bold shadow-2xs' : 'bg-white text-slate-700 border border-black/5'"
-                                            class="px-3 py-1 rounded-xl text-xs ios-transition active:scale-95">
-                                        {{ k }} {{ k === 1 ? 'Клуч' : 'Клучеви' }}
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Custom Type 39: Mileage -->
-                            <div v-if="item.customType === 'mileage'" class="flex items-center space-x-2 text-xs">
-                                <span class="font-bold text-slate-700 shrink-0">Километража (km):</span>
-                                <input type="number" v-model="item.mileageValue" placeholder="напр. 185000" class="flex-1 bg-[#F2F2F7] border border-black/5 rounded-xl px-3 py-1.5 text-slate-900 font-mono font-bold focus:outline-none focus:ring-2 focus:ring-[#FF3B30]">
-                            </div>
-
-                            <!-- DEFECT QUICK TAGS & COMMENT AREA -->
-                            <div v-if="item.status === 'NOT_OK' || item.comment || item.photo" class="space-y-2.5 pt-1">
-                                <!-- QUICK TAGS (SPECIFIC FOR ITEM) -->
-                                <div class="flex flex-wrap gap-1.5 items-center">
-                                    <span class="text-[11px] font-bold text-slate-500 mr-1"><i class="fa-solid fa-tags text-[#FF3B30]"></i> Брзи ознаки:</span>
-                                    <button v-for="tag in (item.tags || defaultPresetTags)" :key="tag"
-                                            @click.stop="appendTag(item, tag)"
-                                            class="bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200/80 text-[11px] font-semibold px-2.5 py-1 rounded-xl ios-transition active:scale-95 flex items-center space-x-1">
-                                        <i class="fa-solid fa-plus text-[9px] text-amber-600"></i>
-                                        <span>{{ tag }}</span>
-                                    </button>
-                                </div>
-
-                                <!-- COMMENT TEXT AREA -->
-                                <div>
-                                    <textarea v-model="item.comment" 
-                                              placeholder="Запишете детали за дефектот..." 
-                                              class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl p-3 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] ios-transition font-medium min-h-[60px]"></textarea>
-                                </div>
-
-                                <!-- PHOTO ATTACHMENT -->
-                                <div class="flex items-center justify-between">
-                                    <label class="cursor-pointer bg-[#767680]/10 hover:bg-[#767680]/15 text-slate-800 px-3.5 py-1.5 rounded-2xl text-xs font-semibold ios-transition flex items-center space-x-1.5 active:scale-95">
-                                        <i class="fa-solid fa-camera text-[#FF3B30]"></i>
-                                        <span>{{ item.photo ? 'Промени слика' : 'Прикачи слика' }}</span>
-                                        <input type="file" accept="image/*" @change="handlePhotoUpload($event, item)" class="hidden">
-                                    </label>
-
-                                    <button v-if="item.photo" @click.stop="item.photo = null" class="text-[#FF3B30] hover:text-red-700 text-xs font-semibold flex items-center space-x-1 active:scale-95">
-                                        <i class="fa-solid fa-trash-can text-[11px]"></i>
-                                        <span>Избриши слика</span>
-                                    </button>
-                                </div>
-
-                                <div v-if="item.photo" class="mt-2 relative rounded-2xl overflow-hidden border border-black/5 max-h-48 bg-black/5 flex justify-center">
-                                    <img :src="item.photo" class="max-h-48 object-contain">
-                                </div>
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- SAVE / ACTION BUTTONS FOOTER (ONCE AT BOTTOM OF INSPECTION FORM) -->
-                <div class="pt-6 flex flex-col sm:flex-row gap-3">
-                    <button @click="saveInspection()" class="flex-1 bg-[#FF3B30] hover:bg-[#E03126] text-white py-4 rounded-3xl font-bold text-sm shadow-md shadow-red-500/20 active:scale-95 ios-transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-floppy-disk text-base"></i>
-                        <span>Зачувај го Извештајот</span>
-                    </button>
-                    
-                    <button @click="openSummaryModal()" class="bg-white border border-black/5 hover:bg-slate-50 text-slate-800 px-6 py-4 rounded-3xl font-bold text-sm shadow-2xs active:scale-95 ios-transition flex items-center justify-center space-x-2">
-                        <i class="fa-solid fa-file-invoice text-base text-[#FF3B30]"></i>
-                        <span>Преглед за Принт</span>
-                    </button>
-                </div>
-
+        <!-- ARCHIVE DRAWER / MODAL -->
+        <div v-if="showArchive" class="bg-white rounded-2xl p-4 shadow-xl border border-slate-200 mb-4 transition-all">
+            <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2">
+                <h2 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-box-archive text-red-500"></i>
+                    Зачувани Инспекции ({{ savedReports.length }})
+                </h2>
+                <button @click="showArchive = false" class="text-slate-400 hover:text-slate-600 text-xs p-1">
+                    <i class="fa-solid fa-xmark text-base"></i>
+                </button>
             </div>
 
-            <!-- TAB 2: SAVED INSPECTIONS ARCHIVE -->
-            <div v-if="currentTab === 'history'" class="space-y-4">
-                <div class="flex items-center justify-between">
-                    <h2 class="font-extrabold text-slate-900 text-lg flex items-center space-x-2 tracking-tight">
-                        <i class="fa-solid fa-box-archive text-[#FF3B30]"></i>
-                        <span>Зачувани Извештаи</span>
-                    </h2>
-                    <span class="text-xs text-slate-500 font-semibold bg-slate-200/60 px-2.5 py-0.5 rounded-full">{{ savedInspections.length }} вкупно</span>
-                </div>
-
-                <!-- SEARCH FIELD (iOS SEARCH BAR STYLE) -->
-                <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" v-model="searchQuery" placeholder="Пребарај по марка, VIN или инспектор..." class="w-full bg-[#E3E3E8]/60 border border-black/5 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] ios-transition">
-                </div>
-
-                <!-- EMPTY STATE -->
-                <div v-if="filteredHistory.length === 0" class="bg-white border border-black/5 rounded-3xl p-8 text-center space-y-3 shadow-2xs">
-                    <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto text-slate-400 text-xl">
-                        <i class="fa-solid fa-folder-open"></i>
-                    </div>
-                    <p class="text-sm font-bold text-slate-700">Нема пронајдено извештаи</p>
-                    <p class="text-xs text-slate-400 font-medium">Започнете нова инспекција за да го зачувате првиот извештај.</p>
-                </div>
-
-                <!-- HISTORY LIST CARDS -->
-                <div class="space-y-3">
-                    <div v-for="insp in filteredHistory" :key="insp.id" class="bg-white border border-black/5 rounded-3xl p-4 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-red-300 ios-transition space-y-3">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h3 class="font-bold text-slate-900 text-base leading-tight tracking-tight">{{ insp.vehicle.makeModel || 'Неименувано возило' }}</h3>
-                                <p class="text-xs font-mono text-slate-500 mt-0.5 uppercase tracking-wide">VIN: {{ insp.vehicle.vin || '-----' }}</p>
-                            </div>
-                            <span class="text-[11px] font-semibold text-slate-500 bg-[#F2F2F7] border border-black/5 px-2.5 py-0.5 rounded-lg">{{ insp.date }}</span>
-                        </div>
-
-                        <div class="flex items-center justify-between text-xs pt-2.5 border-t border-slate-100">
-                            <div class="flex space-x-3">
-                                <span class="text-[#34C759] font-bold"><i class="fa-solid fa-circle-check mr-1"></i>{{ getStatCount(insp, 'OK') }} OK</span>
-                                <span class="text-[#FF3B30] font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ getStatCount(insp, 'NOT_OK') }} Дефекти</span>
-                            </div>
-
-                            <div class="flex items-center space-x-2">
-                                <button @click="loadSavedInspection(insp)" class="bg-red-50 text-[#FF3B30] hover:bg-red-100 border border-red-200/60 px-3.5 py-1.5 rounded-xl font-bold text-xs ios-transition flex items-center space-x-1 active:scale-95">
-                                    <i class="fa-solid fa-folder-open text-xs"></i>
-                                    <span>Отвори</span>
-                                </button>
-                                <button @click="deleteSavedInspection(insp.id)" class="text-slate-400 hover:text-[#FF3B30] p-1.5 ios-transition active:scale-95">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div v-if="savedReports.length === 0" class="text-center py-6 text-slate-400 text-xs">
+                <i class="fa-regular fa-folder-open text-3xl mb-2 text-slate-300"></i>
+                <p>Нема зачувани извештаи во архивата.</p>
             </div>
 
-        </main>
-
-        <!-- PRINTABLE REPORT MODAL (iOS MODAL SHEET STYLE) -->
-        <div v-if="showSummaryModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-            <div class="bg-white border border-black/5 w-full max-w-2xl rounded-[28px] shadow-2xl p-6 space-y-6 my-auto max-h-[90vh] overflow-y-auto">
-                <!-- MODAL HEADER -->
-                <div class="flex items-center justify-between border-b border-slate-100 pb-4 no-print">
-                    <h2 class="font-extrabold text-slate-900 text-lg flex items-center space-x-2 tracking-tight">
-                        <i class="fa-solid fa-file-contract text-[#FF3B30]"></i>
-                        <span>Преглед на Извештај</span>
-                    </h2>
-                    <div class="flex items-center space-x-2">
-                        <button @click="printReport()" class="bg-[#FF3B30] hover:bg-[#E03126] text-white px-4 py-1.5 rounded-xl font-bold text-xs flex items-center space-x-1.5 active:scale-95 ios-transition shadow-sm">
-                            <i class="fa-solid fa-print"></i>
-                            <span>Испечати / PDF</span>
-                        </button>
-                        <button @click="showSummaryModal = false" class="text-slate-400 hover:text-slate-600 p-1.5">
-                            <i class="fa-solid fa-xmark text-xl"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- PRINT HEADER ONLY -->
-                <div class="hidden print-only text-center border-b pb-4">
-                    <h1 class="text-2xl font-bold uppercase tracking-tight">AutoCheck MK - Извештај за инспекција</h1>
-                    <p class="text-xs text-gray-500">Записник за состојба на увезено возило</p>
-                </div>
-
-                <!-- REPORT VEHICLE METADATA SUMMARY -->
-                <div class="bg-[#F2F2F7] border border-black/5 rounded-2xl p-4 grid grid-cols-2 gap-3 text-xs">
+            <div v-else class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <div 
+                    v-for="(rep, idx) in savedReports" 
+                    :key="idx" 
+                    class="p-3 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200/80 flex items-center justify-between text-xs transition"
+                >
                     <div>
-                        <span class="text-slate-400 font-semibold block">Марка и Модел:</span>
-                        <span class="font-bold text-slate-900 text-sm">{{ activeInspection.vehicle.makeModel || 'Возило не е внесено' }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 font-semibold block">Број на Шасија (VIN):</span>
-                        <span class="font-mono font-bold text-slate-900 text-sm uppercase tracking-wider">{{ activeInspection.vehicle.vin || '-----' }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 font-semibold block">Прегледал (Инспектор):</span>
-                        <span class="font-semibold text-slate-800">{{ activeInspection.inspector || 'Ненаведен' }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-400 font-semibold block">Датум:</span>
-                        <span class="font-semibold text-slate-800">{{ activeInspection.date }}</span>
-                    </div>
-                </div>
-
-                <!-- DEFECTS SUMMARY TABLE IN REPORT -->
-                <div class="space-y-3">
-                    <h3 class="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                        <i class="fa-solid fa-triangle-exclamation text-[#FF3B30]"></i>
-                        <span>Евидентирани оштетувања / забелешки ({{ notOkCount }})</span>
-                    </h3>
-
-                    <div v-if="notOkCount === 0" class="text-xs text-emerald-600 font-semibold bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-center">
-                        <i class="fa-solid fa-circle-check mr-1"></i> Возилото е во одлична состојба! Нема регистрирано дефекти.
-                    </div>
-
-                    <div v-else class="space-y-2">
-                        <div v-for="item in activeInspection.items.filter(i => i.status === 'NOT_OK')" :key="item.id" class="border border-slate-200 rounded-xl p-3 text-xs space-y-1">
-                            <div class="flex items-center justify-between font-bold text-slate-900">
-                                <span>#{{ item.id }} {{ item.name }}</span>
-                                <span class="text-[#FF3B30] font-bold text-[10px] bg-red-50 border border-red-100 px-2 py-0.5 rounded-md">DEFECT</span>
-                            </div>
-                            <p v-if="item.comment" class="text-slate-700 bg-slate-50 p-2 rounded-lg font-medium">{{ item.comment }}</p>
-                            <div v-if="item.photo" class="pt-1">
-                                <img :src="item.photo" class="max-h-24 rounded-lg border object-contain">
-                            </div>
+                        <div class="font-bold text-slate-900">{{ rep.vehicle.brandModel || 'Без име' }}</div>
+                        <div class="text-[11px] text-slate-500">VIN: {{ rep.vehicle.vin || '—' }} | {{ rep.vehicle.date }}</div>
+                        <div class="text-[10px] font-semibold mt-1" :class="rep.notOkCount > 0 ? 'text-red-600' : 'text-emerald-600'">
+                            {{ rep.notOkCount > 0 ? 'Со дефекти: ' + rep.notOkCount : 'Сите OK' }}
                         </div>
                     </div>
-                </div>
-
-                <!-- SIGNATURE SECTION FOR PRINT -->
-                <div class="pt-8 grid grid-cols-2 gap-8 text-center text-xs text-slate-500 border-t border-slate-200">
-                    <div>
-                        <div class="border-b border-slate-400 mb-1 h-8"></div>
-                        <span>Потпис на инспектор</span>
-                    </div>
-                    <div>
-                        <div class="border-b border-slate-400 mb-1 h-8"></div>
-                        <span>Примил (Записник)</span>
+                    <div class="flex items-center gap-1.5">
+                        <button @click="loadReport(rep)" class="p-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition" title="Вчитувај">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </button>
+                        <button @click="deleteReport(idx)" class="p-1.5 bg-slate-200 text-slate-600 hover:bg-red-500 hover:text-white rounded-lg transition" title="Избриши">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VEHICLE EDIT MODAL (iOS DIALOG SHEET) -->
-        <div v-if="showVehicleModal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
-            <div class="bg-white border border-black/5 w-full max-w-md rounded-[28px] p-6 shadow-2xl space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h3 class="font-extrabold text-slate-900 text-base flex items-center space-x-2 tracking-tight">
-                        <i class="fa-solid fa-id-card text-[#FF3B30]"></i>
-                        <span>Податоци за возилото</span>
-                    </h3>
-                    <button @click="showVehicleModal = false" class="text-slate-400 hover:text-slate-700 p-1">
-                        <i class="fa-solid fa-xmark text-lg"></i>
+        <!-- STATS / PROGRESS MINI SUMMARY BAR -->
+        <div class="bg-white rounded-2xl p-3 shadow-sm border border-slate-200/60 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium uppercase">Проверени</span>
+                    <span class="font-bold text-slate-800 text-sm">{{ checkedCount }} / {{ items.length }}</span>
+                </div>
+                <div class="h-6 w-px bg-slate-200"></div>
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium uppercase">Исправно</span>
+                    <span class="font-bold text-emerald-600 text-sm">{{ okCount }} OK</span>
+                </div>
+                <div class="h-6 w-px bg-slate-200"></div>
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium uppercase">Дефекти</span>
+                    <span class="font-bold text-red-600 text-sm">{{ notOkCount }} NOT OK</span>
+                </div>
+            </div>
+            <button @click="resetForm" class="text-[11px] text-slate-500 hover:text-red-600 font-medium flex items-center gap-1">
+                <i class="fa-solid fa-rotate-left"></i>
+                <span>Ресетирај</span>
+            </button>
+        </div>
+
+        <!-- INSPECTION CARDS LIST -->
+        <div class="space-y-3">
+            <div 
+                v-for="item in filteredItems" 
+                :key="item.id"
+                @click="activeItemId = item.id"
+                :class="[
+                    'bg-white rounded-2xl p-4 transition-all duration-200 border',
+                    activeItemId === item.id 
+                        ? 'border-red-500/40 shadow-xl -translate-y-0.5 ring-2 ring-red-500/20 z-10' 
+                        : 'border-slate-200/70 shadow-[0_2px_8px_rgba(0,0,0,0.03)] hover:border-slate-300'
+                ]"
+            >
+                <!-- Card Header -->
+                <div class="flex items-start justify-between gap-2 mb-2">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-900 text-sm leading-snug">{{ item.title }}</h3>
+                        <p v-if="item.subtitle" class="text-[11px] text-slate-500 mt-0.5">{{ item.subtitle }}</p>
+                    </div>
+
+                    <!-- Status Indicator Pill -->
+                    <div 
+                        v-if="item.status"
+                        :class="item.status === 'OK' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'"
+                        class="px-2 py-0.5 rounded-full text-[10px] font-bold border uppercase flex items-center gap-1 shrink-0"
+                    >
+                        <i :class="item.status === 'OK' ? 'fa-solid fa-check text-emerald-600' : 'fa-solid fa-xmark text-red-600'"></i>
+                        <span>{{ item.status }}</span>
+                    </div>
+                </div>
+
+                <!-- Custom Inline Radio / Input Options for special items -->
+                <div v-if="item.type === 'rims'" class="my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Тип на Бандажи:</span>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <label v-for="opt in ['ALU', 'МЕТАЛНИ', 'Раткапни']" :key="opt" 
+                            :class="item.subType === opt ? 'bg-red-600 text-white font-semibold shadow-sm' : 'bg-white text-slate-700 border border-slate-200'"
+                            class="text-center py-1.5 px-2 rounded-lg text-xs cursor-pointer transition active:scale-95"
+                        >
+                            <input type="radio" :name="'rims_'+item.id" :value="opt" v-model="item.subType" class="hidden">
+                            {{ opt }}
+                        </label>
+                    </div>
+                </div>
+
+                <div v-if="item.type === 'ignition'" class="my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Начин на палење:</span>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <label v-for="opt in ['Нормално пали', 'Со кабли']" :key="opt" 
+                            :class="item.subType === opt ? 'bg-red-600 text-white font-semibold shadow-sm' : 'bg-white text-slate-700 border border-slate-200'"
+                            class="text-center py-1.5 px-2 rounded-lg text-xs cursor-pointer transition active:scale-95"
+                        >
+                            <input type="radio" :name="'ign_'+item.id" :value="opt" v-model="item.subType" class="hidden">
+                            {{ opt }}
+                        </label>
+                    </div>
+                </div>
+
+                <div v-if="item.type === 'spare_wheel'" class="my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Опрема за гума:</span>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <label v-for="opt in ['Резервна гума', 'Сет Пена + Компресор', 'Нема']" :key="opt" 
+                            :class="item.subType === opt ? 'bg-red-600 text-white font-semibold shadow-sm' : 'bg-white text-slate-700 border border-slate-200'"
+                            class="text-center py-1.5 px-2 rounded-lg text-xs cursor-pointer transition active:scale-95"
+                        >
+                            <input type="radio" :name="'spare_'+item.id" :value="opt" v-model="item.subType" class="hidden">
+                            {{ opt }}
+                        </label>
+                    </div>
+                </div>
+
+                <div v-if="item.type === 'keys'" class="my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <span class="text-[11px] font-semibold text-slate-500 block mb-1.5">Број на клучеви:</span>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <label v-for="opt in ['1 Клуч', '2 Клуча', 'Без клуч']" :key="opt" 
+                            :class="item.subType === opt ? 'bg-red-600 text-white font-semibold shadow-sm' : 'bg-white text-slate-700 border border-slate-200'"
+                            class="text-center py-1.5 px-2 rounded-lg text-xs cursor-pointer transition active:scale-95"
+                        >
+                            <input type="radio" :name="'key_'+item.id" :value="opt" v-model="item.subType" class="hidden">
+                            {{ opt }}
+                        </label>
+                    </div>
+                </div>
+
+                <div v-if="item.type === 'mileage'" class="my-2.5 p-2 bg-slate-50 rounded-xl border border-slate-200/80">
+                    <label class="text-[11px] font-semibold text-slate-500 block mb-1">Запиши Километража (км):</label>
+                    <input 
+                        type="number" 
+                        v-model="item.mileageValue" 
+                        placeholder="напр. 142000" 
+                        class="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none"
+                    >
+                </div>
+
+                <!-- OK / NOT OK Main Decision Buttons -->
+                <div class="grid grid-cols-2 gap-2 mt-3">
+                    <button 
+                        @click="setItemStatus(item, 'OK')" 
+                        :class="[
+                            item.status === 'OK' 
+                                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-bold' 
+                                : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200/80 font-semibold',
+                            'py-2.5 rounded-xl text-xs transition active:scale-95 flex items-center justify-center gap-1.5'
+                        ]"
+                    >
+                        <i class="fa-solid fa-circle-check text-sm"></i>
+                        <span>ОК (Исправно)</span>
+                    </button>
+
+                    <button 
+                        @click="setItemStatus(item, 'NOT_OK')" 
+                        :class="[
+                            item.status === 'NOT_OK' 
+                                ? 'bg-red-600 text-white shadow-md shadow-red-600/20 font-bold' 
+                                : 'bg-red-50 text-red-800 hover:bg-red-100 border border-red-200/80 font-semibold',
+                            'py-2.5 rounded-xl text-xs transition active:scale-95 flex items-center justify-center gap-1.5'
+                        ]"
+                    >
+                        <i class="fa-solid fa-circle-xmark text-sm"></i>
+                        <span>NOT OK (Дефект)</span>
                     </button>
                 </div>
 
-                <div class="space-y-3.5 text-sm">
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1 text-xs">Марка и Модел:</label>
-                        <input type="text" v-model="activeInspection.vehicle.makeModel" placeholder="напр. Volkswagen Golf 7" class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl px-3.5 py-2.5 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-semibold text-xs ios-transition">
+                <!-- DEFECT COMMENT BOX & QUICK TAGS (Appears when NOT OK is selected) -->
+                <div v-if="item.status === 'NOT_OK'" class="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                    <div class="text-[11px] font-semibold text-slate-600 flex items-center justify-between">
+                        <span>Брзи ознаки за дефект:</span>
+                        <span class="text-[10px] text-slate-400">Кликни за брз избор</span>
                     </div>
 
-                    <div>
-                        <label class="block font-bold text-slate-700 mb-1 text-xs">Број на шасија (VIN):</label>
-                        <input type="text" v-model="activeInspection.vehicle.vin" placeholder="напр. WVWZZZ1KZ..." class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl px-3.5 py-2.5 text-slate-900 font-mono uppercase focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-bold text-xs ios-transition">
+                    <!-- Specific Quick Tag Chips -->
+                    <div class="flex flex-wrap gap-1.5">
+                        <button 
+                            v-for="tag in getItemQuickTags(item)" 
+                            :key="tag" 
+                            @click="addTagToComment(item, tag)"
+                            class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-700 rounded-lg text-[11px] font-medium border border-slate-200 transition active:scale-95"
+                        >
+                            + {{ tag }}
+                        </button>
                     </div>
 
+                    <!-- Comment Input Field -->
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1 text-xs">Прегледал (Инспектор):</label>
-                        <input type="text" v-model="activeInspection.inspector" placeholder="Име и Презиме" class="w-full bg-[#F2F2F7] border border-black/5 rounded-2xl px-3.5 py-2.5 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#FF3B30] font-semibold text-xs ios-transition">
+                        <textarea 
+                            v-model="item.comment" 
+                            rows="2" 
+                            placeholder="Опиши го дефектот или внеси детали..."
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs focus:bg-white focus:ring-2 focus:ring-red-500 focus:outline-none transition"
+                        ></textarea>
+                    </div>
+
+                    <!-- Optional Photo Attachment Box -->
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="cursor-pointer inline-flex items-center gap-1.5 text-xs text-red-600 font-medium hover:underline">
+                            <i class="fa-solid fa-camera"></i>
+                            <span>{{ item.photos && item.photos.length ? 'Додади уште слика' : 'Додади слика' }}</span>
+                            <input type="file" accept="image/*" class="hidden" @change="handlePhotoUpload($event, item)">
+                        </label>
+                        <span v-if="item.photos && item.photos.length" class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full font-bold">
+                            {{ item.photos.length }} слика(и)
+                        </span>
+                    </div>
+
+                    <!-- Photo Thumbnails -->
+                    <div v-if="item.photos && item.photos.length" class="flex gap-2 overflow-x-auto pt-1">
+                        <div v-for="(img, imgIdx) in item.photos" :key="imgIdx" class="relative group shrink-0">
+                            <img :src="img" class="w-14 h-14 object-cover rounded-lg border border-slate-200">
+                            <button @click="removePhoto(item, imgIdx)" class="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center">
+                                ×
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="pt-2 flex justify-end space-x-2">
-                    <button @click="showVehicleModal = false" class="bg-[#FF3B30] hover:bg-[#E03126] text-white font-bold px-6 py-2.5 rounded-2xl text-xs active:scale-95 ios-transition shadow-sm">
-                        Потврди
+            </div>
+        </div>
+
+        <!-- ================= BOTTOM FINAL ACTIONS (Appears only ONCE) ================= -->
+        <div class="mt-8 pt-6 border-t border-slate-200/80 space-y-3 pb-8">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm space-y-3">
+                <div class="text-center space-y-1">
+                    <h3 class="font-bold text-slate-900 text-sm">Финализирање на Извештајот</h3>
+                    <p class="text-xs text-slate-500">Зачувајте ја вашата инспекција во локална архива или генерирајте верзија за печатење.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    <button 
+                        @click="saveReport" 
+                        class="w-full bg-slate-900 hover:bg-black text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-md active:scale-95 flex items-center justify-center gap-2"
+                    >
+                        <i class="fa-solid fa-floppy-disk text-red-400"></i>
+                        <span>Зачувај го извештајот</span>
+                    </button>
+
+                    <button 
+                        @click="openPrintPreview" 
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl text-xs transition shadow-md shadow-red-600/20 active:scale-95 flex items-center justify-center gap-2"
+                    >
+                        <i class="fa-solid fa-print"></i>
+                        <span>Преглед за принт</span>
                     </button>
                 </div>
             </div>
         </div>
 
+    </main>
+
+    <!-- EDIT VEHICLE DETAILS MODAL -->
+    <div v-if="showModal === 'editVehicle'" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-5 max-w-sm w-full shadow-2xl space-y-4 animate-in fade-in zoom-in duration-150">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                <h3 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-car text-red-500"></i>
+                    Податоци за Возило
+                </h3>
+                <button @click="showModal = null" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-500 font-semibold mb-1">Марка и Модел:</label>
+                    <input type="text" v-model="vehicle.brandModel" placeholder="напр. Volkswagen Golf 7 2.0 TDI" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-500 font-semibold mb-1">Број на шасија (VIN):</label>
+                    <input type="text" v-model="vehicle.vin" placeholder="напр. WVWZZZ1KZAU123456" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs uppercase focus:ring-2 focus:ring-red-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-500 font-semibold mb-1">Прегледал (Име Презиме):</label>
+                    <input type="text" v-model="vehicle.inspector" placeholder="напр. Петар Петровски" class="w-full border border-slate-300 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none">
+                </div>
+            </div>
+
+            <button @click="showModal = null" class="w-full bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs shadow-md">
+                Зачувај промени
+            </button>
+        </div>
     </div>
 
-    <script>
-        const { createApp } = Vue;
+    <!-- PRINT PREVIEW REPORT MODAL -->
+    <div v-if="showModal === 'printPreview'" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md overflow-y-auto p-4 flex justify-center">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 my-auto relative">
+            <!-- Header buttons -->
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3 no-print">
+                <span class="font-bold text-slate-900 text-sm">Преглед на официјален извештај</span>
+                <div class="flex items-center gap-2">
+                    <button @click="triggerPrint" class="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Испечати / Преземи PDF</span>
+                    </button>
+                    <button @click="showModal = null" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-bold">
+                        Затвори
+                    </button>
+                </div>
+            </div>
 
-        const tagsExteriorBody = ['Изгребано', 'Вдлабнато', 'Пукнато', 'Рѓа', 'Скршено', 'Изместено', 'Паднат лак'];
-        const tagsGlass = ['Пукнатина', 'Камче', 'Скршено', 'Изгребано'];
-        const tagsLights = ['Скршено', 'Влага / Кондензација', 'Изгребано', 'Не работи', 'Магла'];
-        const tagsInterior = ['Скинато', 'Валкано', 'Изгорено', 'Изгребано', 'Недостасува', 'Скршено копче'];
-        const tagsElectronics = ['Не работи', 'Слабо', 'Трепка', 'Грешка на табла'];
-        const tagsEngineDrive = ['Чудни звуци', 'Тропање', 'Истекување', 'Слабо влече', 'Чади', 'Трза'];
+            <!-- Printable Sheet Area -->
+            <div id="printSheet" class="space-y-4 text-slate-900 text-xs">
+                <!-- Document Header -->
+                <div class="flex items-center justify-between border-b-2 border-slate-900 pb-3">
+                    <div>
+                        <h1 class="text-xl font-bold uppercase tracking-wide">ИЗВЕШТАЈ ЗА ИНСПЕКЦИЈА НА ВОЗИЛО</h1>
+                        <p class="text-[11px] text-slate-500">AutoCheck MK Import Control</p>
+                    </div>
+                    <div class="text-right text-[11px]">
+                        <div><strong>Датум:</strong> {{ vehicle.date }}</div>
+                    </div>
+                </div>
 
-        const DEFAULT_CHECKLIST = [
-            // НАДВОРЕШНА ПРОВЕРКА
-            { id: 1, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Проверка Течности', hint: 'Масло, Антифриз, Течност за бришачи', customType: 'liquids', liquidsChecked: ['Масло', 'Антифриз'], tags: ['Под минимум', 'Многу валкано', 'Истекување'] },
-            { id: 2, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Акумулатор', tags: ['Слаб напон', 'Оштетен', 'Оксидација', 'За замена'] },
-            { id: 3, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Преден Браник', tags: tagsExteriorBody },
-            { id: 4, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Фарови', hint: 'Проверка на пукнатини и влага', tags: tagsLights },
-            { id: 5, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Хауба', tags: tagsExteriorBody },
-            { id: 6, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Шофершајбна', tags: tagsGlass },
-            { id: 7, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Кров', tags: tagsExteriorBody },
-            { id: 8, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Тркала / Бандажи', customType: 'wheels', wheelType: 'ALU', hasHubcaps: false, tags: ['Изгребани', 'Крив бандаж', 'Недостасува раткапна'] },
-            { id: 9, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Состојба на гуми', hint: 'Длабочина на шара и бренд', customType: 'tires', tireDetails: '', tags: ['Излижани', 'Искинати', 'Различна шара', 'Стар DOT'] },
-            { id: 10, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Прагови', tags: tagsExteriorBody },
-            { id: 11, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Врати (Сите)', tags: tagsExteriorBody },
-            { id: 12, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Гепек', tags: tagsExteriorBody },
-            { id: 13, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Ретровизори', tags: ['Скршено стакло', 'Скршена пластика', 'Не се преклопува'] },
-            { id: 14, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Странични Стакла', tags: tagsGlass },
-            { id: 15, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Заден Браник', tags: tagsExteriorBody },
-            { id: 16, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Задно стакло', tags: tagsGlass },
-            { id: 17, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Задни Штопови / Магленки', tags: tagsLights },
-            { id: 18, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Паркинг сензори', tags: ['Скршен', 'Вдлабнат', 'Не работи'] },
-            { id: 19, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'ПАЛЕЊЕ', customType: 'ignition', ignitionType: 'Редовно Пали', tags: ['Тешко пали', 'Воопшто не пали', 'Тропа при палење'] },
-            { id: 20, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Работа на моторот', hint: 'Нестандардни звуци, тропање', tags: tagsEngineDrive },
-            { id: 21, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Тест возење', hint: 'Менувач, кочење, амортизација...', tags: ['Проблем со менувач', 'Слаби кочници', 'Тропа предница', 'Лоша амортизација'] },
-            { id: 22, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Кабли за полнење (EV/Хибрид)', tags: ['Недостасува', 'Оштетен кабел'] },
-            { id: 23, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Ајдучки клуч', tags: ['Недостасува'] },
-            { id: 24, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Даска / Ролетна во гепек', tags: ['Недостасува', 'Скршена', 'Скината'] },
-            { id: 25, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Наслони за глава', tags: ['Недостасуваат', 'Оштетени'] },
-            { id: 26, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Резервна Гума / Пена', customType: 'spare_wheel', spareType: 'Резервна Гума', tags: ['Оштетена', 'Истечен рок на пена'] },
-            { id: 27, category: 'НАДВОРЕШНА ПРОВЕРКА', name: 'Дизалица', tags: ['Недостасува', 'Скршена'] },
+                <!-- Vehicle Metadata Grid -->
+                <div class="grid grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border border-slate-200 text-[11px]">
+                    <div><span class="text-slate-500 block">Марка и Модел:</span><strong>{{ vehicle.brandModel || '—' }}</strong></div>
+                    <div><span class="text-slate-500 block">Број на шасија (VIN):</span><strong>{{ vehicle.vin || '—' }}</strong></div>
+                    <div><span class="text-slate-500 block">Прегледал:</span><strong>{{ vehicle.inspector || '—' }}</strong></div>
+                </div>
 
-            // ВНАТРЕШНОСТ
-            { id: 28, category: 'ВНАТРЕШНОСТ', name: 'Седишта', hint: 'Оштетувања, валкано', tags: tagsInterior },
-            { id: 29, category: 'ВНАТРЕШНОСТ', name: 'Екрани / Дисплеи', tags: ['Изгребан', 'Мртви пиксели', 'Не реагира на допир', 'Скршен'] },
-            { id: 30, category: 'ВНАТРЕШНОСТ', name: 'Панели, Копчиња, Пластики', tags: tagsInterior },
-            { id: 31, category: 'ВНАТРЕШНОСТ', name: 'Таван', tags: ['Одлепен', 'Валкан', 'Скинат'] },
-            { id: 32, category: 'ВНАТРЕШНОСТ', name: 'Сончев кров', hint: 'Стакло, шибер дефект...', tags: ['Не отвара', 'Глави', 'Пропушта вода', 'Скршено стакло'] },
-            { id: 33, category: 'ВНАТРЕШНОСТ', name: 'Клучеви', customType: 'keys', keyCount: 1, tags: ['Скршено куќиште', 'Празна батерија'] },
-            { id: 34, category: 'ВНАТРЕШНОСТ', name: 'Навигација (Мапи/SD)', tags: ['Нема SD картичка', 'Нема мапи', 'Не лоцира GPS'] },
-            { id: 35, category: 'ВНАТРЕШНОСТ', name: 'Влага / Мувла', tags: ['Мирис на мувла', 'Мокри теписи', 'Вода во гепек'] },
-            { id: 36, category: 'ВНАТРЕШНОСТ', name: 'Warning Lights (Грешки)', hint: 'Check Engine, Airbag, ABS...', tags: ['Check Engine', 'Airbag светнато', 'ABS/ESP', 'DPF филтер'] },
-            { id: 37, category: 'ВНАТРЕШНОСТ', name: 'Паркинг Камера', tags: ['Матна слика', 'Скршена леќа', 'Не дава слика'] },
-            { id: 38, category: 'ВНАТРЕШНОСТ', name: 'Клима Уред', hint: 'Ладење / греење', tags: ['Не лади', 'Слабо дува', 'Лош мирис', 'Бучен вентилатор'] },
-            { id: 39, category: 'ВНАТРЕШНОСТ', name: 'Километража од табла', customType: 'mileage', mileageValue: '', tags: ['Не се чита', 'Трепка екранот'] },
-            { id: 40, category: 'ВНАТРЕШНОСТ', name: 'Антени', tags: ['Скршена', 'Недостасува'] },
-            { id: 41, category: 'ВНАТРЕШНОСТ', name: 'Радио / Звучници', tags: ['Крчи', 'Слабо фаќа станици', 'Пробиен звучник'] },
-            { id: 42, category: 'ВНАТРЕШНОСТ', name: 'Дополнителна ОПРЕМА', hint: 'Прва помош, елеци, триаголник', tags: ['Недостасува Триаголник', 'Нема Прва Помош', 'Истечен рок на прва помош'] }
-        ];
+                <!-- Defect Summary Section -->
+                <div class="space-y-2">
+                    <h2 class="font-bold text-slate-900 text-xs uppercase border-b border-slate-200 pb-1">Утврдени Дефекти & Забелешки</h2>
+                    
+                    <div v-if="notOkItems.length === 0" class="p-3 bg-emerald-50 text-emerald-800 rounded-xl text-center text-xs font-semibold">
+                        ✓ Возилото нема регистрирани оштетувања или дефекти. Сите ставки се ОК.
+                    </div>
 
-        createApp({
-            data() {
-                return {
-                    currentTab: 'form',
-                    categoryFilter: 'ALL',
-                    searchQuery: '',
-                    showSummaryModal: false,
-                    showVehicleModal: false,
-                    activeItemId: null,
-                    defaultPresetTags: ['Оштетено', 'Скршено', 'Недостасува', 'Не работи', 'Изгребано', 'Замена'],
-                    savedInspections: [],
-                    activeInspection: this.createFreshInspection()
-                }
+                    <div v-else class="space-y-1.5">
+                        <div v-for="item in notOkItems" :key="item.id" class="p-2.5 bg-red-50 border border-red-200 rounded-xl flex items-start justify-between">
+                            <div>
+                                <span class="font-bold text-red-900">{{ item.title }}</span>
+                                <p class="text-[11px] text-red-800 mt-0.5">{{ item.comment || 'Нема дополнителен коментар' }}</p>
+                            </div>
+                            <span class="text-[10px] font-bold bg-red-200 text-red-900 px-2 py-0.5 rounded uppercase">NOT OK</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Full Checklist Summary Grid -->
+                <div class="space-y-2 pt-2">
+                    <h2 class="font-bold text-slate-900 text-xs uppercase border-b border-slate-200 pb-1">Комплетна Список Проверка ({{ items.length }})</h2>
+                    <div class="grid grid-cols-2 gap-1.5 text-[10px]">
+                        <div v-for="item in items" :key="item.id" class="flex items-center justify-between p-1.5 bg-slate-50 rounded border border-slate-200">
+                            <span class="truncate pr-1">{{ item.title }}</span>
+                            <span :class="item.status === 'OK' ? 'text-emerald-700 font-bold' : (item.status === 'NOT_OK' ? 'text-red-700 font-bold' : 'text-slate-400')">
+                                {{ item.status || '—' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+    data() {
+        return {
+            activeCategory: 'ALL',
+            activeItemId: null,
+            showArchive: false,
+            showModal: null,
+            savedReports: [],
+            vehicle: {
+                brandModel: 'Volkswagen Golf 7 2.0 TDI',
+                vin: 'WVWZZZ1KZAU987654',
+                inspector: 'Марко Петровски',
+                date: new Date().toISOString().split('T')[0]
             },
-            computed: {
-                filteredItems() {
-                    let list = this.activeInspection.items;
-                    if (this.categoryFilter === 'DEFECTS') {
-                        return list.filter(i => i.status === 'NOT_OK');
-                    }
-                    if (this.categoryFilter !== 'ALL') {
-                        return list.filter(i => i.category === this.categoryFilter);
-                    }
-                    return list;
-                },
-                checkedCount() {
-                    return this.activeInspection.items.filter(i => i.status).length;
-                },
-                okCount() {
-                    return this.activeInspection.items.filter(i => i.status === 'OK').length;
-                },
-                notOkCount() {
-                    return this.activeInspection.items.filter(i => i.status === 'NOT_OK').length;
-                },
-                filteredHistory() {
-                    if (!this.searchQuery) return this.savedInspections;
-                    const q = this.searchQuery.toLowerCase();
-                    return this.savedInspections.filter(i => 
-                        (i.vehicle.makeModel && i.vehicle.makeModel.toLowerCase().includes(q)) ||
-                        (i.vehicle.vin && i.vehicle.vin.toLowerCase().includes(q)) ||
-                        (i.inspector && i.inspector.toLowerCase().includes(q))
-                    );
-                }
-            },
-            created() {
-                this.loadFromLocalStorage();
-            },
-            methods: {
-                openVehicleEditModal() {
-                    this.showVehicleModal = true;
-                },
-                createFreshInspection() {
-                    const d = new Date();
-                    const dateStr = d.getDate().toString().padStart(2, '0') + '.' + (d.getMonth() + 1).toString().padStart(2, '0') + '.' + d.getFullYear();
-                    return {
-                        id: Date.now().toString(),
-                        date: dateStr,
-                        inspector: '',
-                        vehicle: {
-                            makeModel: '',
-                            vin: ''
-                        },
-                        items: JSON.parse(JSON.stringify(DEFAULT_CHECKLIST)).map(i => ({
-                            ...i,
-                            status: null,
-                            comment: '',
-                            photo: null
-                        }))
-                    };
-                },
-                setStatus(item, status) {
-                    item.status = status;
-                    this.activeItemId = item.id;
-                    this.autoSaveDraft();
-                },
-                toggleLiquid(item, name) {
-                    if (!item.liquidsChecked) item.liquidsChecked = [];
-                    const idx = item.liquidsChecked.indexOf(name);
-                    if (idx >= 0) {
-                        item.liquidsChecked.splice(idx, 1);
-                    } else {
-                        item.liquidsChecked.push(name);
-                    }
-                },
-                appendTag(item, tag) {
-                    if (!item.comment) {
-                        item.comment = tag;
-                    } else if (!item.comment.includes(tag)) {
-                        item.comment += ', ' + tag;
-                    }
-                },
-                handlePhotoUpload(event, item) {
-                    const file = event.target.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (e) => {
-                            item.photo = e.target.result;
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                },
-                markAllRemainingOk() {
-                    this.activeInspection.items.forEach(item => {
-                        if (!item.status) {
-                            item.status = 'OK';
-                        }
-                    });
-                    this.autoSaveDraft();
-                },
-                createNewInspection() {
-                    if (this.checkedCount > 0) {
-                        if (!confirm("Дали сте сигурни дека сакате да започнете нова инспекција? Сегашната инспекција ќе биде архивирана/заменета.")) {
-                            return;
-                        }
-                    }
-                    this.activeInspection = this.createFreshInspection();
-                    this.currentTab = 'form';
-                },
-                saveInspection() {
-                    if(!this.activeInspection.vehicle.makeModel) {
-                        this.openVehicleEditModal();
-                        alert("Ве молиме внесете Марка и Модел на возилото.");
-                        return;
-                    }
-                    const existingIndex = this.savedInspections.findIndex(i => i.id === this.activeInspection.id);
-                    if (existingIndex >= 0) {
-                        this.savedInspections[existingIndex] = JSON.parse(JSON.stringify(this.activeInspection));
-                    } else {
-                        this.savedInspections.unshift(JSON.parse(JSON.stringify(this.activeInspection)));
-                    }
-                    this.saveToLocalStorage();
-                    alert("Извештајот е успешно зачуван во архивата!");
-                },
-                autoSaveDraft() {
-                    localStorage.setItem('autocheck_current_draft', JSON.stringify(this.activeInspection));
-                },
-                saveToLocalStorage() {
-                    localStorage.setItem('autocheck_saved_history', JSON.stringify(this.savedInspections));
-                    this.autoSaveDraft();
-                },
-                loadFromLocalStorage() {
-                    const history = localStorage.getItem('autocheck_saved_history');
-                    if (history) {
-                        try {
-                            this.savedInspections = JSON.parse(history);
-                        } catch(e) { console.error(e); }
-                    }
-                    const draft = localStorage.getItem('autocheck_current_draft');
-                    if (draft) {
-                        try {
-                            this.activeInspection = JSON.parse(draft);
-                        } catch(e) { console.error(e); }
-                    }
-                },
-                loadSavedInspection(insp) {
-                    this.activeInspection = JSON.parse(JSON.stringify(insp));
-                    this.currentTab = 'form';
-                },
-                deleteSavedInspection(id) {
-                    if (confirm("Дали сте сигурни дека сакате да го избришете овој извештај?")) {
-                        this.savedInspections = this.savedInspections.filter(i => i.id !== id);
-                        this.saveToLocalStorage();
-                    }
-                },
-                getStatCount(insp, status) {
-                    return insp.items.filter(i => i.status === status).length;
-                },
-                openSummaryModal() {
-                    this.showSummaryModal = true;
-                },
-                printReport() {
-                    window.print();
-                }
+            categories: [
+                { id: 'ALL', label: 'СИТЕ' },
+                { id: 'EXTERIOR', label: 'Надворешна' },
+                { id: 'INTERIOR', label: 'Внатрешност' },
+                { id: 'NOT_OK', label: 'Со Оштетувања' },
+                { id: 'OK', label: 'Останати OK' }
+            ],
+            // Master checklist items array
+            items: [
+                // НАДВОРЕШНА ПРОВЕРКА
+                { id: 1, category: 'EXTERIOR', title: 'Проверка Течности', subtitle: 'Масло, Антифриз, Гориво', status: null, comment: '', photos: [] },
+                { id: 2, category: 'EXTERIOR', title: 'Акумулатор', subtitle: 'Состојба и напон', status: null, comment: '', photos: [] },
+                { id: 3, category: 'EXTERIOR', title: 'Преден Браник', subtitle: 'Оштетувања и гребнатини', status: null, comment: '', photos: [] },
+                { id: 4, category: 'EXTERIOR', title: 'Фарови', subtitle: 'Оштетени + Влага', status: null, comment: '', photos: [] },
+                { id: 5, category: 'EXTERIOR', title: 'Хауба', subtitle: 'Состојба на лим', status: null, comment: '', photos: [] },
+                { id: 6, category: 'EXTERIOR', title: 'Шофершајбна', subtitle: 'Камчиња и пукнатини', status: null, comment: '', photos: [] },
+                { id: 7, category: 'EXTERIOR', title: 'Кров', subtitle: 'Вдлабнатини од град и слично', status: null, comment: '', photos: [] },
+                { id: 8, category: 'EXTERIOR', title: 'Тркала / Бандажи', subtitle: 'Изберете тип', type: 'rims', subType: 'ALU', status: null, comment: '', photos: [] },
+                { id: 9, category: 'EXTERIOR', title: 'Преглед на гуми', subtitle: 'Шара и состојба', status: null, comment: '', photos: [] },
+                { id: 10, category: 'EXTERIOR', title: 'Прагови', subtitle: 'Лева и десна страна', status: null, comment: '', photos: [] },
+                { id: 11, category: 'EXTERIOR', title: 'Врати', subtitle: 'Сите 4 врати', status: null, comment: '', photos: [] },
+                { id: 12, category: 'EXTERIOR', title: 'Гепек', subtitle: 'Задна врата', status: null, comment: '', photos: [] },
+                { id: 13, category: 'EXTERIOR', title: 'Ретровизори', subtitle: 'Лево и десно стакло + куќиште', status: null, comment: '', photos: [] },
+                { id: 14, category: 'EXTERIOR', title: 'Странични Стакла', subtitle: 'Сите стакла', status: null, comment: '', photos: [] },
+                { id: 15, category: 'EXTERIOR', title: 'Заден Браник', subtitle: 'Состојба и пластики', status: null, comment: '', photos: [] },
+                { id: 16, category: 'EXTERIOR', title: 'Задно стакло', subtitle: 'Греачи и стакло', status: null, comment: '', photos: [] },
+                { id: 17, category: 'EXTERIOR', title: 'Задни Штопови / Магленки', subtitle: 'Оштетени + Влага', status: null, comment: '', photos: [] },
+                { id: 18, category: 'EXTERIOR', title: 'Паркинг сензори', subtitle: 'Предни и задни', status: null, comment: '', photos: [] },
+                { id: 19, category: 'EXTERIOR', title: 'ПАЛЕЊЕ', subtitle: 'Дали пали нормално или со кабли', type: 'ignition', subType: 'Нормално пали', status: null, comment: '', photos: [] },
+                { id: 20, category: 'EXTERIOR', title: 'Мотор - Работа', subtitle: 'Нестандардни звуци и тропање', status: null, comment: '', photos: [] },
+                { id: 21, category: 'EXTERIOR', title: 'Тест возење & Менувач', subtitle: 'Кочење, дискови, предница, амортизација', status: null, comment: '', photos: [] },
+                { id: 22, category: 'EXTERIOR', title: 'Кабли за полнење', subtitle: 'За електрични / хибридни возила', status: null, comment: '', photos: [] },
+                { id: 23, category: 'EXTERIOR', title: 'Ајдучки клуч', subtitle: 'Клуч за тркала', status: null, comment: '', photos: [] },
+                { id: 24, category: 'EXTERIOR', title: 'Даска / Ролетна во гепек', subtitle: 'Присутност и состојба', status: null, comment: '', photos: [] },
+                { id: 25, category: 'EXTERIOR', title: 'Наслони за глава', subtitle: 'Комплетност', status: null, comment: '', photos: [] },
+                { id: 26, category: 'EXTERIOR', title: 'Резервна Гума / Сет', subtitle: 'Резервна гума или пена + компресор', type: 'spare_wheel', subType: 'Резервна гума', status: null, comment: '', photos: [] },
+                { id: 27, category: 'EXTERIOR', title: 'Дизалица', subtitle: 'Дизне за дигање', status: null, comment: '', photos: [] },
+
+                // ВНАТРЕШНОСТ
+                { id: 28, category: 'INTERIOR', title: 'Седишта', subtitle: 'Предни и задни седишта', status: null, comment: '', photos: [] },
+                { id: 29, category: 'INTERIOR', title: 'Екрани', subtitle: 'Централен дисплеј и калориметар', status: null, comment: '', photos: [] },
+                { id: 30, category: 'INTERIOR', title: 'Панели, Копчиња, Пластики', subtitle: 'Елементи во ентериерот', status: null, comment: '', photos: [] },
+                { id: 31, category: 'INTERIOR', title: 'Таван', subtitle: 'Небо / Тапацир', status: null, comment: '', photos: [] },
+                { id: 32, category: 'INTERIOR', title: 'Сончев кров', subtitle: 'Стакло, механизам, дефект', status: null, comment: '', photos: [] },
+                { id: 33, category: 'INTERIOR', title: 'Резервен Клуч', subtitle: 'Број на клучеви', type: 'keys', subType: '2 Клуча', status: null, comment: '', photos: [] },
+                { id: 34, category: 'INTERIOR', title: 'Навигација', subtitle: 'Мапи, SD Картичка', status: null, comment: '', photos: [] },
+                { id: 35, category: 'INTERIOR', title: 'Влага / Мувла', subtitle: 'Мирис или влага под теписи', status: null, comment: '', photos: [] },
+                { id: 36, category: 'INTERIOR', title: 'Warning Lights на табла', subtitle: 'Светилки за грешка (Check Engine, Airbag...)', status: null, comment: '', photos: [] },
+                { id: 37, category: 'INTERIOR', title: 'Паркинг Камера', subtitle: 'Задна / 360 камера', status: null, comment: '', photos: [] },
+                { id: 38, category: 'INTERIOR', title: 'Клима Уред', subtitle: 'Ладење и греење', status: null, comment: '', photos: [] },
+                { id: 39, category: 'INTERIOR', title: 'Километража', subtitle: 'Запис на моментална состојба', type: 'mileage', mileageValue: '', status: null, comment: '', photos: [] },
+                { id: 40, category: 'INTERIOR', title: 'Антени', subtitle: 'Радио приемник', status: null, comment: '', photos: [] },
+                { id: 41, category: 'INTERIOR', title: 'Радио / Звук', subtitle: 'Звучници и аудио систем', status: null, comment: '', photos: [] },
+                { id: 42, category: 'INTERIOR', title: 'ОПРЕМА', subtitle: 'Триаголник, прва помош, елеци', status: null, comment: '', photos: [] }
+            ]
+        };
+    },
+    computed: {
+        filteredItems() {
+            if (this.activeCategory === 'ALL') return this.items;
+            if (this.activeCategory === 'EXTERIOR') return this.items.filter(i => i.category === 'EXTERIOR');
+            if (this.activeCategory === 'INTERIOR') return this.items.filter(i => i.category === 'INTERIOR');
+            if (this.activeCategory === 'NOT_OK') return this.items.filter(i => i.status === 'NOT_OK');
+            if (this.activeCategory === 'OK') return this.items.filter(i => i.status === 'OK');
+            return this.items;
+        },
+        checkedCount() {
+            return this.items.filter(i => i.status !== null).length;
+        },
+        okCount() {
+            return this.items.filter(i => i.status === 'OK').length;
+        },
+        notOkCount() {
+            return this.items.filter(i => i.status === 'NOT_OK').length;
+        },
+        notOkItems() {
+            return this.items.filter(i => i.status === 'NOT_OK');
+        }
+    },
+    created() {
+        this.loadFromLocalStorage();
+    },
+    methods: {
+        setItemStatus(item, status) {
+            item.status = status;
+            this.activeItemId = item.id;
+            this.autoSaveDraft();
+        },
+        getCategoryCount(catId) {
+            if (catId === 'ALL') return this.items.length;
+            if (catId === 'EXTERIOR') return this.items.filter(i => i.category === 'EXTERIOR').length;
+            if (catId === 'INTERIOR') return this.items.filter(i => i.category === 'INTERIOR').length;
+            if (catId === 'NOT_OK') return this.items.filter(i => i.status === 'NOT_OK').length;
+            if (catId === 'OK') return this.items.filter(i => i.status === 'OK').length;
+            return 0;
+        },
+        getItemQuickTags(item) {
+            // Specific tags depending on item type/title
+            const title = item.title.toLowerCase();
+
+            if (title.includes('браник') || title.includes('врати') || title.includes('хауба') || title.includes('кров') || title.includes('гепек') || title.includes('прагови')) {
+                return ['ИЗГРЕБАНО', 'ПУКНАТО', 'СКРШЕНО', 'ИЗМЕСТЕНО', 'ВДЛАБНАТО', 'РЃА'];
             }
-        }).mount('#app');
-    </script>
+            if (title.includes('фарови') || title.includes('штопови') || title.includes('стакла') || title.includes('шофершајбна') || title.includes('ретровизори')) {
+                return ['КАМЧЕ', 'ПУКНАТИНА', 'ОШТЕЕТНО', 'ВЛАГА', 'ОДБЛЕСОК'];
+            }
+            if (title.includes('течности') || title.includes('мотор') || title.includes('менувач') || title.includes('тест')) {
+                return ['ИСТЕКУВА', 'НИСКО НИВО', 'БУЧАВА', 'ЧУДЕН ЗВУК', 'ВИБРАЦИИ', 'НЕДОСТИГА'];
+            }
+            if (title.includes('седишта') || title.includes('панели') || title.includes('таван') || title.includes('влага')) {
+                return ['ИЗНОСЕНО', 'СКИНАТО', 'ИЗГОРЕНО', 'ФЛЕКА', 'МУВЛА', 'ОШТЕТЕНО'];
+            }
+            if (title.includes('екрани') || title.includes('клима') || title.includes('радио') || title.includes('камера') || title.includes('warning') || title.includes('сензори')) {
+                return ['НЕ РАБОТИ', 'СВЕТИ ГРЕШКА', 'ДЕФЕКТ', 'ПРЕКИНУВА', 'ОШТЕТЕН ДИСПЛЕЈ'];
+            }
+
+            return ['ОШТЕТЕНО', 'НЕДОСТИГА', 'ДЕФЕКТ', 'ИЗГРЕБАНО'];
+        },
+        addTagToComment(item, tag) {
+            if (!item.comment) {
+                item.comment = tag;
+            } else if (!item.comment.includes(tag)) {
+                item.comment += ', ' + tag;
+            }
+            this.autoSaveDraft();
+        },
+        handlePhotoUpload(event, item) {
+            const files = event.target.files;
+            if (!files || !files[0]) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (!item.photos) item.photos = [];
+                item.photos.push(e.target.result);
+                this.autoSaveDraft();
+            };
+            reader.readAsDataURL(files[0]);
+        },
+        removePhoto(item, idx) {
+            if (item.photos) {
+                item.photos.splice(idx, 1);
+                this.autoSaveDraft();
+            }
+        },
+        saveReport() {
+            const reportData = {
+                id: Date.now(),
+                vehicle: { ...this.vehicle },
+                items: JSON.parse(JSON.stringify(this.items)),
+                notOkCount: this.notOkCount,
+                savedAt: new Date().toLocaleString()
+            };
+
+            this.savedReports.unshift(reportData);
+            try {
+                localStorage.setItem('autocheck_reports', JSON.stringify(this.savedReports));
+                alert('Извештајот е успешно зачуван во архивата!');
+            } catch (e) {
+                alert('Зачувано локално!');
+            }
+        },
+        loadReport(rep) {
+            this.vehicle = { ...rep.vehicle };
+            this.items = JSON.parse(JSON.stringify(rep.items));
+            this.showArchive = false;
+        },
+        deleteReport(idx) {
+            this.savedReports.splice(idx, 1);
+            try {
+                localStorage.setItem('autocheck_reports', JSON.stringify(this.savedReports));
+            } catch (e) {}
+        },
+        autoSaveDraft() {
+            try {
+                localStorage.setItem('autocheck_current_draft', JSON.stringify({
+                    vehicle: this.vehicle,
+                    items: this.items
+                }));
+            } catch (e) {}
+        },
+        loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem('autocheck_reports');
+                if (saved) this.savedReports = JSON.parse(saved);
+
+                const draft = localStorage.getItem('autocheck_current_draft');
+                if (draft) {
+                    const parsed = JSON.parse(draft);
+                    if (parsed.vehicle) this.vehicle = parsed.vehicle;
+                    if (parsed.items) this.items = parsed.items;
+                }
+            } catch (e) {}
+        },
+        resetForm() {
+            if (confirm('Дали сте сигурни дека сакате да го ресетирате извештајот?')) {
+                this.items.forEach(i => {
+                    i.status = null;
+                    i.comment = '';
+                    i.photos = [];
+                });
+                localStorage.removeItem('autocheck_current_draft');
+            }
+        },
+        openPrintPreview() {
+            this.showModal = 'printPreview';
+        },
+        triggerPrint() {
+            window.print();
+        }
+    }
+}).mount('#app');
+</script>
 </body>
 </html>
